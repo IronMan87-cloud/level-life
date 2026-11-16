@@ -36,11 +36,9 @@ function load(){try{let x=JSON.parse(localStorage.getItem(KEY)||'{}');if(x.activ
 function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
 function seedStarter(){
  if(db.starterApplied)return;
- const hasAny=db.tasks.length||db.goals.length||db.skills.length||db.projects.length||db.habits.length;
- if(hasAny){db.starterApplied=true;localStorage.setItem(KEY,JSON.stringify(db));return}
  const d=today();
  const add=(title,time,priority='Обычный',date=d)=>({id:id(),title,date,time,priority,done:false,rewarded:false});
- db.tasks=[
+ db.tasks=[...db.tasks,
  add('Утренняя тренировка — 25 минут','07:00','Главный результат'),
  add('Обучение — 25 минут и записать 5 выводов','07:30','Главный результат'),
  add('Перед выходом: проверить документы и материалы для ГИБДД','08:15','Высокий'),
@@ -53,14 +51,14 @@ function seedStarter(){
  add('Закрыть одну отложенную задачу','20:00'),
  add('Составить план на завтра','20:30')
  ];
- db.goals=[
+ db.goals=[...db.goals,
  {id:id(),title:'Выйти на стабильный доход 150 000 ₽ в месяц',desc:'Ближайшая финансовая цель. Приоритет — удалённая работа и собственные проекты.',date:'',progress:0,milestones:[{id:id(),title:'Получить стабильный источник дохода',done:false},{id:id(),title:'Закрепить доход на уровне 150 000 ₽/мес.',done:false}]},
  {id:id(),title:'Создать систему дохода 300 000 ₽ в месяц',desc:'Долгосрочная финансовая свобода: несколько устойчивых источников дохода.',date:'',progress:0,milestones:[{id:id(),title:'Найти работающую бизнес-модель',done:false},{id:id(),title:'Подтвердить спрос первыми продажами',done:false},{id:id(),title:'Довести чистый доход до 300 000 ₽/мес.',done:false}]},
  {id:id(),title:'Развить Jarvis в автономного предпринимательского агента',desc:'Исследование рынков, поиск возможностей, создание продуктов и продажи. Экономическая окупаемость до масштабирования; никаких реальных трат и сделок без подтверждения.',date:'',progress:0,milestones:[{id:id(),title:'Закончить безопасную архитектуру и Approval Manager',done:false},{id:id(),title:'Запустить автоматический дневник и Life System',done:false},{id:id(),title:'Научить исследовать спрос и конкурентов',done:false},{id:id(),title:'Создать первый продукт и найти покупателей',done:false},{id:id(),title:'Подтвердить положительную экономику проекта',done:false}]},
  {id:id(),title:'Улучшить качество жизни',desc:'Более просторная двухкомнатная квартира, кот, путешествия и комфортный автомобиль.',date:'',progress:0,milestones:[{id:id(),title:'Сформировать финансовую подушку',done:false},{id:id(),title:'Подготовить переезд в двухкомнатную квартиру',done:false},{id:id(),title:'Запланировать путешествие и завести кота',done:false},{id:id(),title:'Накопить на Lancer X рестайлинг',done:false}]},
  {id:id(),title:'Закрыть долги и укрепить финансовую устойчивость',desc:'Сначала закрыть обязательства, затем резерв и накопления.',date:'',progress:0,milestones:[{id:id(),title:'Составить полный список обязательств',done:false},{id:id(),title:'Погасить долги',done:false},{id:id(),title:'Создать резерв на несколько месяцев',done:false}]}
  ];
- db.skills=[
+ db.skills=[...db.skills,
  {id:id(),title:'Продажи и переговоры',cat:'Карьера',baseline:'Ориентир: улучшать конверсию сделок; подтверждать реальными результатами',xp:0},
  {id:id(),title:'Предпринимательство',cat:'Финансы',baseline:'Запуск продукта и подтверждённые продажи',xp:0},
  {id:id(),title:'Аналитика и исследование рынка',cat:'Интеллект',baseline:'Качественные исследования с выводами и проверкой гипотез',xp:0},
@@ -70,22 +68,30 @@ function seedStarter(){
  {id:id(),title:'Дисциплина и управление временем',cat:'Другое',baseline:'Выполнение плана и стабильность',xp:0},
  {id:id(),title:'Финансовая грамотность',cat:'Финансы',baseline:'Бюджет, учёт и чистый финансовый результат',xp:0}
  ];
- db.projects=[
- {id:id(),title:'Jarvis — автономный агент',desc:'Безопасная инфраструктура, память, компьютерные действия через разрешения, исследования и бизнес-задачи.',goal:db.goals[2].id,done:false},
- {id:id(),title:'Поиск стабильного удалённого дохода',desc:'Поддержка PlayStation как проверяемая возможность; альтернативно — 2 отклика на подходящие удалённые вакансии.',goal:db.goals[0].id,done:false},
- {id:id(),title:'Собственный интернет-продукт',desc:'Выбрать проблему, проверить спрос, собрать MVP, найти покупателей и первые продажи.',goal:db.goals[1].id,done:false},
+ db.projects=[...db.projects,
+ {id:id(),title:'Jarvis — автономный агент',desc:'Безопасная инфраструктура, память, компьютерные действия через разрешения, исследования и бизнес-задачи.',goal:db.goals.find(g=>g.title==='Развить Jarvis в автономного предпринимательского агента')?.id||'',done:false},
+ {id:id(),title:'Поиск стабильного удалённого дохода',desc:'Поддержка PlayStation как проверяемая возможность; альтернативно — 2 отклика на подходящие удалённые вакансии.',goal:db.goals.find(g=>g.title==='Выйти на стабильный доход 150 000 ₽ в месяц')?.id||'',done:false},
+ {id:id(),title:'Собственный интернет-продукт',desc:'Выбрать проблему, проверить спрос, собрать MVP, найти покупателей и первые продажи.',goal:db.goals.find(g=>g.title==='Создать систему дохода 300 000 ₽ в месяц')?.id||'',done:false},
  {id:id(),title:'LEVEL — личная RPG-система',desc:'Планирование, доказательства навыков, финансы и автоматический дневник.',goal:db.goals[2].id,done:false}
  ];
- db.habits=[
+ db.habits=[...db.habits,
  {id:id(),title:'Тренировка или физическая активность 25 минут',freq:'daily',logs:[],xpDates:[]},
  {id:id(),title:'Обучение 25 минут и 5 записанных выводов',freq:'daily',logs:[],xpDates:[]},
  {id:id(),title:'30 минут на доход или собственный проект',freq:'daily',logs:[],xpDates:[]},
  {id:id(),title:'Вечером закрыть отложенную задачу и спланировать завтра',freq:'daily',logs:[],xpDates:[]}
  ];
+ const dedupeByTitle=items=>{const seen=new Set();return items.filter(item=>{const key=(item.title||'').trim().toLocaleLowerCase('ru');if(!key||seen.has(key))return false;seen.add(key);return true})};
+ db.tasks=dedupeByTitle(db.tasks);
+ db.goals=dedupeByTitle(db.goals);
+ db.skills=dedupeByTitle(db.skills);
+ db.projects=dedupeByTitle(db.projects);
+ db.habits=dedupeByTitle(db.habits);
  db.starterApplied=true;db.dailyTemplateDate=d;
- db.weeklyBudget={total:3500,transport:500,food:2100,reserve:900};
- db.financeNote='Возврат 15 000 ₽ считать только после фактического поступления.';
- db.activityXP=0;db.streak=0;db.lastActive=null;
+ if(!db.weeklyBudget)db.weeklyBudget={total:3500,transport:500,food:2100,reserve:900};
+ if(!db.financeNote)db.financeNote='Возврат 15 000 ₽ считать только после фактического поступления.';
+ if(db.activityXP===undefined)db.activityXP=0;
+ if(db.streak===undefined)db.streak=0;
+ if(db.lastActive===undefined)db.lastActive=null;
  localStorage.setItem(KEY,JSON.stringify(db));
 }
 
