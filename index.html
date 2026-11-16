@@ -34,6 +34,61 @@ const fresh=()=>({tasks:[],goals:[],skills:[],projects:[],transactions:[],proofs
 let db=load();
 function load(){try{let x=JSON.parse(localStorage.getItem(KEY)||'{}');if(x.activityXP===undefined)x.activityXP=(x.tasks||[]).filter(t=>t.done).length*10;return {...fresh(),...x,tasks:(x.tasks||[]).map(t=>({...t,rewarded:!!t.rewarded})),goals:(x.goals||[]).map(g=>({...g,milestones:g.milestones||[]})),proofs:(x.proofs||[]).map(p=>({...p,status:p.status||'approved'})),habits:x.habits||[]}}catch(e){return fresh()}}
 function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function seedStarter(){
+ if(db.starterApplied)return;
+ const hasAny=db.tasks.length||db.goals.length||db.skills.length||db.projects.length||db.habits.length;
+ if(hasAny){db.starterApplied=true;localStorage.setItem(KEY,JSON.stringify(db));return}
+ const d=today();
+ const add=(title,time,priority='Обычный',date=d)=>({id:id(),title,date,time,priority,done:false,rewarded:false});
+ db.tasks=[
+ add('Утренняя тренировка — 25 минут','07:00','Главный результат'),
+ add('Обучение — 25 минут и записать 5 выводов','07:30','Главный результат'),
+ add('Перед выходом: проверить документы и материалы для ГИБДД','08:15','Высокий'),
+ add('Передать видео и материалы по ДТП в ГИБДД','','Главный результат'),
+ add('Разобраться с вопросом университета','','Главный результат'),
+ add('Проверить возврат 15 000 ₽; учитывать деньги только после фактического поступления','','Главный результат'),
+ add('Проверить ответ по вакансии поддержки PlayStation','','Высокий'),
+ add('Если ответа нет — отправить 2 отклика на удалённые вакансии','','Высокий'),
+ add('Предпринимательство — 30 минут работы над идеей заработка / своим проектом','19:00','Главный результат'),
+ add('Закрыть одну отложенную задачу','20:00'),
+ add('Составить план на завтра','20:30')
+ ];
+ db.goals=[
+ {id:id(),title:'Выйти на стабильный доход 150 000 ₽ в месяц',desc:'Ближайшая финансовая цель. Приоритет — удалённая работа и собственные проекты.',date:'',progress:0,milestones:[{id:id(),title:'Получить стабильный источник дохода',done:false},{id:id(),title:'Закрепить доход на уровне 150 000 ₽/мес.',done:false}]},
+ {id:id(),title:'Создать систему дохода 300 000 ₽ в месяц',desc:'Долгосрочная финансовая свобода: несколько устойчивых источников дохода.',date:'',progress:0,milestones:[{id:id(),title:'Найти работающую бизнес-модель',done:false},{id:id(),title:'Подтвердить спрос первыми продажами',done:false},{id:id(),title:'Довести чистый доход до 300 000 ₽/мес.',done:false}]},
+ {id:id(),title:'Развить Jarvis в автономного предпринимательского агента',desc:'Исследование рынков, поиск возможностей, создание продуктов и продажи. Экономическая окупаемость до масштабирования; никаких реальных трат и сделок без подтверждения.',date:'',progress:0,milestones:[{id:id(),title:'Закончить безопасную архитектуру и Approval Manager',done:false},{id:id(),title:'Запустить автоматический дневник и Life System',done:false},{id:id(),title:'Научить исследовать спрос и конкурентов',done:false},{id:id(),title:'Создать первый продукт и найти покупателей',done:false},{id:id(),title:'Подтвердить положительную экономику проекта',done:false}]},
+ {id:id(),title:'Улучшить качество жизни',desc:'Более просторная двухкомнатная квартира, кот, путешествия и комфортный автомобиль.',date:'',progress:0,milestones:[{id:id(),title:'Сформировать финансовую подушку',done:false},{id:id(),title:'Подготовить переезд в двухкомнатную квартиру',done:false},{id:id(),title:'Запланировать путешествие и завести кота',done:false},{id:id(),title:'Накопить на Lancer X рестайлинг',done:false}]},
+ {id:id(),title:'Закрыть долги и укрепить финансовую устойчивость',desc:'Сначала закрыть обязательства, затем резерв и накопления.',date:'',progress:0,milestones:[{id:id(),title:'Составить полный список обязательств',done:false},{id:id(),title:'Погасить долги',done:false},{id:id(),title:'Создать резерв на несколько месяцев',done:false}]}
+ ];
+ db.skills=[
+ {id:id(),title:'Продажи и переговоры',cat:'Карьера',baseline:'Ориентир: улучшать конверсию сделок; подтверждать реальными результатами',xp:0},
+ {id:id(),title:'Предпринимательство',cat:'Финансы',baseline:'Запуск продукта и подтверждённые продажи',xp:0},
+ {id:id(),title:'Аналитика и исследование рынка',cat:'Интеллект',baseline:'Качественные исследования с выводами и проверкой гипотез',xp:0},
+ {id:id(),title:'Разработка и Jarvis',cat:'Технологии',baseline:'Работающие функции, тесты и измеримый результат',xp:0},
+ {id:id(),title:'Английский язык',cat:'Коммуникация',baseline:'Тесты и практические задачи',xp:0},
+ {id:id(),title:'Физическая форма',cat:'Физическая форма',baseline:'Силовые показатели и время на дистанции',xp:0},
+ {id:id(),title:'Дисциплина и управление временем',cat:'Другое',baseline:'Выполнение плана и стабильность',xp:0},
+ {id:id(),title:'Финансовая грамотность',cat:'Финансы',baseline:'Бюджет, учёт и чистый финансовый результат',xp:0}
+ ];
+ db.projects=[
+ {id:id(),title:'Jarvis — автономный агент',desc:'Безопасная инфраструктура, память, компьютерные действия через разрешения, исследования и бизнес-задачи.',goal:db.goals[2].id,done:false},
+ {id:id(),title:'Поиск стабильного удалённого дохода',desc:'Поддержка PlayStation как проверяемая возможность; альтернативно — 2 отклика на подходящие удалённые вакансии.',goal:db.goals[0].id,done:false},
+ {id:id(),title:'Собственный интернет-продукт',desc:'Выбрать проблему, проверить спрос, собрать MVP, найти покупателей и первые продажи.',goal:db.goals[1].id,done:false},
+ {id:id(),title:'LEVEL — личная RPG-система',desc:'Планирование, доказательства навыков, финансы и автоматический дневник.',goal:db.goals[2].id,done:false}
+ ];
+ db.habits=[
+ {id:id(),title:'Тренировка или физическая активность 25 минут',freq:'daily',logs:[],xpDates:[]},
+ {id:id(),title:'Обучение 25 минут и 5 записанных выводов',freq:'daily',logs:[],xpDates:[]},
+ {id:id(),title:'30 минут на доход или собственный проект',freq:'daily',logs:[],xpDates:[]},
+ {id:id(),title:'Вечером закрыть отложенную задачу и спланировать завтра',freq:'daily',logs:[],xpDates:[]}
+ ];
+ db.starterApplied=true;
+ db.weeklyBudget={total:3500,transport:500,food:2100,reserve:900};
+ db.financeNote='Возврат 15 000 ₽ считать только после фактического поступления.';
+ db.activityXP=0;db.streak=0;db.lastActive=null;
+ localStorage.setItem(KEY,JSON.stringify(db));
+}
+
 function id(){return Math.random().toString(36).slice(2,10)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -44,7 +99,7 @@ function modal(title,body){document.getElementById('modalTitle').textContent=tit
 function closeModal(){document.getElementById('modalBack').classList.remove('show')}
 function openModal(type,ref){
 let b='';
-if(type==='task')b='<label>Название квеста</label><input class="field" id="fTitle" placeholder="Конкретный следующий шаг"><div class="formgrid"><div><label>Дата</label><input class="field" id="fDate" type="date" value="'+today()+'"></div><div><label>Приоритет</label><select class="field" id="fPriority"><option>Обычный</option><option>Высокий</option><option>Главный результат</option></select></div></div><label>Связать с целью</label><select class="field" id="fLink"><option value="">Без цели</option>'+db.goals.map(g=>'<option value="'+g.id+'">'+esc(g.title)+'</option>').join('')+'</select><button class="btn primary" onclick="addTask()">Добавить квест</button>';
+if(type==='task')b='<label>Название квеста</label><input class="field" id="fTitle" placeholder="Конкретный следующий шаг"><div class="formgrid"><div><label>Дата</label><input class="field" id="fDate" type="date" value="'+today()+'"></div><div><label>Время (если важно)</label><input class="field" id="fTime" type="time"></div></div><div><label>Приоритет</label><select class="field" id="fPriority"><option>Обычный</option><option>Высокий</option><option>Главный результат</option></select></div></div><label>Связать с целью</label><select class="field" id="fLink"><option value="">Без цели</option>'+db.goals.map(g=>'<option value="'+g.id+'">'+esc(g.title)+'</option>').join('')+'</select><button class="btn primary" onclick="addTask()">Добавить квест</button>';
 if(type==='goal')b='<label>Название цели</label><input class="field" id="fTitle" placeholder="Что хочешь изменить?"><label>Почему это важно?</label><textarea class="field" id="fDesc" placeholder="Ожидаемый результат"></textarea><label>Желаемый срок</label><input class="field" id="fDate" type="date"><label>Этапы (каждый с новой строки)</label><textarea class="field" id="fMilestones" placeholder="Первый этап&#10;Второй этап&#10;Финальный результат"></textarea><button class="btn primary" onclick="addGoal()">Создать цель</button>';
 if(type==='skill')b='<label>Название навыка</label><input class="field" id="fTitle" placeholder="Например, переговоры"><label>Категория</label><select class="field" id="fCat"><option>Карьера</option><option>Финансы</option><option>Физическая форма</option><option>Интеллект</option><option>Коммуникация</option><option>Технологии</option><option>Творчество</option><option>Другое</option></select><label>Стартовый измеримый показатель (необязательно)</label><input class="field" id="fBaseline" placeholder="Например: 4 успешные сделки из 10"><button class="btn primary" onclick="addSkill()">Добавить навык</button>';
 if(type==='habit')b='<label>Название привычки</label><input class="field" id="fTitle" placeholder="Например, 30 минут обучения"><label>Частота</label><select class="field" id="fFreq"><option value="daily">Каждый день</option><option value="weekdays">Будни</option></select><button class="btn primary" onclick="addHabit()">Создать привычку</button>';
@@ -54,7 +109,7 @@ if(type==='proof'){let s=db.skills.find(x=>x.id===ref);let prev=db.proofs.filter
 modal(({task:'Новый квест',goal:'Новая долгосрочная цель',skill:'Новый навык',habit:'Новая привычка',project:'Новый проект',transaction:'Финансовая операция',proof:'Proof of Skill'})[type],b);
 }
 function val(x){return document.getElementById(x)?.value?.trim()||''}
-function addTask(){if(!val('fTitle'))return toast('Добавь название');db.tasks.push({id:id(),title:val('fTitle'),date:val('fDate')||today(),priority:val('fPriority'),goal:val('fLink'),done:false,rewarded:false});closeModal();save();toast('Квест добавлен')}
+function addTask(){if(!val('fTitle'))return toast('Добавь название');db.tasks.push({id:id(),title:val('fTitle'),date:val('fDate')||today(),time:val('fTime'),priority:val('fPriority'),goal:val('fLink'),done:false,rewarded:false});closeModal();save();toast('Квест добавлен')}
 function addGoal(){if(!val('fTitle'))return toast('Укажи цель');db.goals.push({id:id(),title:val('fTitle'),desc:val('fDesc'),date:val('fDate'),progress:0,milestones:val('fMilestones').split('\n').map(x=>x.trim()).filter(Boolean).map(title=>({id:id(),title,done:false}))});closeModal();save();toast('Цель создана')}
 function addSkill(){if(!val('fTitle'))return toast('Укажи навык');db.skills.push({id:id(),title:val('fTitle'),cat:val('fCat'),baseline:val('fBaseline'),xp:0});closeModal();save();toast('Навык добавлен')}
 function addHabit(){if(!val('fTitle'))return toast('Укажи привычку');db.habits.push({id:id(),title:val('fTitle'),freq:val('fFreq'),logs:[]});closeModal();save();toast('Привычка добавлена')}
@@ -92,6 +147,6 @@ let paused=db.pauseDates.includes(d);document.getElementById('pauseBtn').textCon
 function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='level-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href);toast('Резервная копия создана')}
 function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x||!Array.isArray(x.tasks)||!Array.isArray(x.goals))throw 0;db={...fresh(),...x};save();toast('Данные восстановлены')}catch(_){toast('Не удалось прочитать резервную копию')}};r.readAsText(f)}
 function resetData(){if(confirm('Точно удалить все данные LEVEL на этом устройстве?')){db=fresh();save();toast('Данные удалены')}}
-document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});render();
+seedStarter();document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});render();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script></body></html>
