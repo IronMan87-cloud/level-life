@@ -81,7 +81,7 @@ function seedStarter(){
  {id:id(),title:'Вечером закрыть отложенную задачу и спланировать завтра',freq:'daily',logs:[],xpDates:[]}
  ];
  const dedupeByTitle=items=>{const seen=new Set();return items.filter(item=>{const key=(item.title||'').trim().toLocaleLowerCase('ru');if(!key||seen.has(key))return false;seen.add(key);return true})};
- db.tasks=dedupeByTitle(db.tasks);
+ db.tasks=(()=>{const seen=new Set();return db.tasks.filter(item=>{const key=(item.title||'').trim().toLocaleLowerCase('ru')+'|'+(item.date||'');if(!item.title||seen.has(key))return false;seen.add(key);return true})})();
  db.goals=dedupeByTitle(db.goals);
  db.skills=dedupeByTitle(db.skills);
  db.projects=dedupeByTitle(db.projects);
