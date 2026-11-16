@@ -82,7 +82,7 @@ function seedStarter(){
  {id:id(),title:'30 минут на доход или собственный проект',freq:'daily',logs:[],xpDates:[]},
  {id:id(),title:'Вечером закрыть отложенную задачу и спланировать завтра',freq:'daily',logs:[],xpDates:[]}
  ];
- db.starterApplied=true;
+ db.starterApplied=true;db.dailyTemplateDate=d;
  db.weeklyBudget={total:3500,transport:500,food:2100,reserve:900};
  db.financeNote='Возврат 15 000 ₽ считать только после фактического поступления.';
  db.activityXP=0;db.streak=0;db.lastActive=null;
@@ -107,6 +107,18 @@ if(type==='project')b='<label>Название проекта</label><input clas
 if(type==='transaction')b='<label>Тип операции</label><select class="field" id="fType"><option value="in">Доход</option><option value="out">Расход</option></select><label>Сумма, ₽</label><input class="field" id="fAmount" type="number" min="1" placeholder="0"><label>Описание</label><input class="field" id="fTitle" placeholder="За что / на что"><button class="btn primary" onclick="addTransaction()">Сохранить</button>';
 if(type==='proof'){let s=db.skills.find(x=>x.id===ref);let prev=db.proofs.filter(p=>p.skill===ref&&p.status==='approved').sort((a,b)=>(a.direction==='lower'?Number(a.value)-Number(b.value):Number(b.value)-Number(a.value)))[0];b='<p class="sub">Навык: '+esc(s?.title||'')+'</p><p class="muted" style="font-size:11px">Текущий лучший результат: '+(prev?esc(prev.value+' '+prev.unit):esc(s?.baseline||'не задан'))+'. Новый результат должен быть измеримым и лучше предыдущего.</p><label>Что именно проверяем?</label><input class="field" id="fTitle" placeholder="Например, дистанция бега"><div class="formgrid"><div><label>Числовой результат</label><input class="field" id="fValue" type="number" step="any" placeholder="Например, 3"></div><div><label>Единица измерения</label><input class="field" id="fUnit" placeholder="км, минуты, сделки..."></div></div><label>Что считается улучшением?</label><select class="field" id="fDirection"><option value="higher">Больше — лучше</option><option value="lower">Меньше — лучше</option></select><label>Тип доказательства</label><select class="field" id="fType"><option>Измерение</option><option>Тест</option><option>Документ</option><option>Фото / видео</option><option>Результат проекта</option></select><label>Доказательство: ссылка или подробное описание</label><textarea class="field" id="fDesc" placeholder="Где посмотреть результат? Какие условия теста?"></textarea><p class="muted" style="font-size:11px">Запись сначала ожидает твоего подтверждения. LEVEL не проверяет подлинность приложенных доказательств автоматически. Подтверждай только реальный результат. Для сравнения повторных испытаний используй одну и ту же метрику и единицу.</p><button class="btn primary" onclick="addProof(\''+ref+'\')">Отправить на подтверждение</button>'}
 modal(({task:'Новый квест',goal:'Новая долгосрочная цель',skill:'Новый навык',habit:'Новая привычка',project:'Новый проект',transaction:'Финансовая операция',proof:'Proof of Skill'})[type],b);
+}
+function ensureDailyTasks(){
+ const d=today();if(db.dailyTemplateDate===d)return;
+ const recurring=[
+ ['Тренировка или физическая активность — 25 минут','07:00','Главный результат'],
+ ['Обучение — 25 минут и 5 выводов','07:30','Главный результат'],
+ ['Предпринимательство — 30 минут над доходом или своим проектом','19:00','Главный результат'],
+ ['Закрыть одну отложенную задачу','20:00','Обычный'],
+ ['Составить план следующего дня','20:30','Обычный']
+ ];
+ recurring.forEach(([title,time,priority])=>db.tasks.push({id:id(),title,date:d,time,priority,done:false,rewarded:false}));
+ db.dailyTemplateDate=d;localStorage.setItem(KEY,JSON.stringify(db));
 }
 function val(x){return document.getElementById(x)?.value?.trim()||''}
 function addTask(){if(!val('fTitle'))return toast('Добавь название');db.tasks.push({id:id(),title:val('fTitle'),date:val('fDate')||today(),time:val('fTime'),priority:val('fPriority'),goal:val('fLink'),done:false,rewarded:false});closeModal();save();toast('Квест добавлен')}
@@ -147,6 +159,6 @@ let paused=db.pauseDates.includes(d);document.getElementById('pauseBtn').textCon
 function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='level-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href);toast('Резервная копия создана')}
 function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x||!Array.isArray(x.tasks)||!Array.isArray(x.goals))throw 0;db={...fresh(),...x};save();toast('Данные восстановлены')}catch(_){toast('Не удалось прочитать резервную копию')}};r.readAsText(f)}
 function resetData(){if(confirm('Точно удалить все данные LEVEL на этом устройстве?')){db=fresh();save();toast('Данные удалены')}}
-seedStarter();document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});render();
+seedStarter();ensureDailyTasks();document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});render();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script></body></html>
