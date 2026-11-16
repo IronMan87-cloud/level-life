@@ -166,5 +166,17 @@ function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'applicat
 function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x||!Array.isArray(x.tasks)||!Array.isArray(x.goals))throw 0;db={...fresh(),...x};save();toast('Данные восстановлены')}catch(_){toast('Не удалось прочитать резервную копию')}};r.readAsText(f)}
 function resetData(){if(confirm('Точно удалить все данные LEVEL на этом устройстве?')){db=fresh();save();toast('Данные удалены')}}
 seedStarter();ensureDailyTasks();document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});render();
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker'in navigator&&location.protocol.startsWith('http')){
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(window.__levelControllerReloaded)return;
+  window.__levelControllerReloaded=true;
+  window.location.reload();
+ });
+ window.addEventListener('load',async()=>{
+  try{
+   const registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+   await registration.update();
+  }catch(error){console.warn('LEVEL update check failed',error)}
+ });
+}
 </script></body></html>
