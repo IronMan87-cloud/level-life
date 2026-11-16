@@ -81,7 +81,7 @@ function goalProgress(gid){let g=db.goals.find(x=>x.id===gid);if(!g)return;let n
 function skillLevel(xp){return Math.floor(Math.sqrt((xp||0)/100))+1}
 function render(){
 let t=db.tasks.filter(x=>x.date===today()),done=t.filter(x=>x.done).length,allDone=db.tasks.filter(x=>x.done).length;
-let xp=db.proofs.reduce((a,p)=>a+(p.xp||0),0)+allDone*5,level=Math.floor(xp/100)+1,within=xp%100;
+let xp=db.proofs.filter(p=>p.status==='approved').reduce((a,p)=>a+(p.xp||0),0)+allDone*5,level=Math.floor(xp/100)+1,within=xp%100;
 document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
 document.getElementById('heroLevel').innerHTML=level+' <small>LVL</small>';document.getElementById('xpLabel').textContent=within+' / 100 XP';document.getElementById('heroProgress').style.width=within+'%';
 document.getElementById('focusCount').textContent=t.length-done+' осталось';document.getElementById('focusSub').textContent=t.length?'Сегодня уже закрыто '+done+' из '+t.length:'Добавь первый шаг — начни движение.';
