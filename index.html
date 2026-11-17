@@ -257,7 +257,7 @@ textarea.field{min-height:70px;resize:vertical}
 <button class="btn primary" id="syncSetPasswordBtn" style="width:100%;margin-top:12px" onclick="setSyncPassword()">Сохранить пароль и завершить</button>
 </div>
 <div id="syncSignedInActions">
-<div class="toolbar" style="margin-top:10px"><button class="btn primary" onclick="syncNow()">Синхронизировать сейчас</button><button class="btn" onclick="signOutSync()">Отключить аккаунт</button></div>
+<div class="toolbar" style="margin-top:10px"><button class="btn primary" onclick="syncNow()">Синхронизировать сейчас</button><button class="btn" onclick="togglePasswordSetup()">Создать / сменить пароль</button><button class="btn" onclick="signOutSync()">Отключить аккаунт</button></div>
 </div>
 </div>
 <div id="syncConflict" style="display:none;margin-top:12px;padding:12px;border:1px solid var(--gold);border-radius:13px">
@@ -483,7 +483,7 @@ const SUPABASE_URL='https://vlbheybdqnddaxykalth.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_YgaJxEM7IEkpZwhGFlBA2w_dX2oVMFb';
 const SYNC_META_KEY='level-life-sync-meta-v1';
 const authHashParams=new URLSearchParams(window.location.hash.slice(1));
-let supabaseClient=null,syncUser=null,syncTimer=null,syncBusy=false,syncQueued=false,syncConflictData=null,authSetupMode=new URLSearchParams(window.location.search).get('auth_setup')==='1'||['magiclink','recovery'].includes(authHashParams.get('type'))||authHashParams.has('error_code')||authHashParams.has('error_description');
+let supabaseClient=null,syncUser=null,syncTimer=null,syncBusy=false,syncQueued=false,syncConflictData=null,showPasswordPanel=false,authSetupMode=new URLSearchParams(window.location.search).get('auth_setup')==='1'||['magiclink','recovery'].includes(authHashParams.get('type'))||authHashParams.has('error_code')||authHashParams.has('error_description');
 function readSyncMeta(){try{return JSON.parse(localStorage.getItem(SYNC_META_KEY)||'{}')}catch(_){return {}}}
 function writeSyncMeta(patch){localStorage.setItem(SYNC_META_KEY,JSON.stringify({...readSyncMeta(),...patch}))}
 function markLocalChange(){
@@ -496,7 +496,7 @@ function showSyncState(signedIn){
  if(a)a.style.display=signedIn?'none':'block';
  if(b)b.style.display=signedIn?'block':'none';
  const setup=document.getElementById('syncPasswordSetup'),actions=document.getElementById('syncSignedInActions');
- if(setup)setup.style.display=signedIn&&authSetupMode?'block':'none';
+ if(setup)setup.style.display=signedIn&&(authSetupMode||showPasswordPanel)?'block':'none';
  if(actions)actions.style.display=signedIn&&authSetupMode?'none':'block';
  const c=document.getElementById('syncAccountLabel');if(c&&syncUser)c.textContent=syncUser.email||'Аккаунт подключён';
 }
@@ -605,6 +605,11 @@ async function signInSync(){
   console.error('LEVEL password sign-in failed',error);
   setSyncStatus('Не удалось войти: '+(error.message||'проверь email и пароль'));
  }finally{if(button){button.disabled=false;button.textContent='Войти и синхронизировать'}}
+}
+function togglePasswordSetup(){
+ showPasswordPanel=!showPasswordPanel;
+ showSyncState(!!syncUser);
+ if(showPasswordPanel)setSyncStatus('Создай пароль в этом уже авторизованном браузере. После сохранения сеанс завершится — затем можно войти по паролю на Safari и Chrome.');
 }
 async function setSyncPassword(){
  if(!supabaseClient||!syncUser)return setSyncStatus('Сначала открой свежую ссылку из письма.');
