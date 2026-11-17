@@ -704,7 +704,7 @@ async function uploadLocalSnapshot(){
 }
 function downloadCloudSnapshot(row){
  if(!row||!row.payload)throw new Error('В облаке нет корректного снимка LEVEL');
- db=normalizeCloudPayload(row.payload);if(typeof window.ensureAutopilotData==='function')window.ensureAutopilotData();localStorage.setItem(KEY,JSON.stringify(db));render();
+ db=normalizeCloudPayload(row.payload);localStorage.setItem(KEY,JSON.stringify(db));render();
  const meta=readSyncMeta(),revision=meta.localRevision||0;
  writeSyncMeta({userId:syncUser.id,localModifiedAt:row.updated_at,localRevision:revision,syncedLocalRevision:revision,dirty:false,lastSyncedAt:row.updated_at,remoteUpdatedAt:row.updated_at});
  hideSyncConflict();setSyncStatus('Загружена актуальная облачная версия · '+new Date(row.updated_at).toLocaleString('ru-RU'));
