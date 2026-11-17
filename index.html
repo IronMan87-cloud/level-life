@@ -146,19 +146,24 @@ textarea.field{min-height:70px;resize:vertical}
   border:0;width:36px;height:36px;border-radius:11px;
   background:#1c3854;font-size:22px;color:var(--muted);
 }
+.more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.more-card{width:100%;min-width:0;display:flex;align-items:center;gap:12px;text-align:left;padding:15px;border:1px solid #294865;border-radius:16px;background:#102139;color:var(--text)}
+.more-card:active{background:#17314b}
+.more-icon{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:#1a3855;color:var(--accent);font-size:20px}
+.more-card>span:nth-child(2){flex:1;min-width:0}
+.more-card strong{display:block;font-size:13px}
+.more-card small{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.4}
+.more-arrow{font-size:23px;color:var(--muted)}
 .nav{
   position:fixed;z-index:10;bottom:0;left:0;right:0;
   background:#091727ed;backdrop-filter:blur(20px);
-  border-top:1px solid #29425d;display:flex;justify-content:flex-start;gap:3px;
-  overflow-x:auto;overscroll-behavior-x:contain;
-  padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));
-  scrollbar-width:none;
+  border-top:1px solid #29425d;display:flex;justify-content:space-around;gap:4px;
+  padding:7px max(8px,env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom));
 }
-.nav::-webkit-scrollbar{display:none}
 .nav button{
-  flex:none;border:0;background:none;color:var(--muted);
-  padding:8px 12px;border-radius:12px;font-size:10px;
-  display:flex;flex-direction:column;gap:3px;align-items:center;min-width:57px;
+  flex:1;min-width:0;border:0;background:none;color:var(--muted);
+  padding:7px 3px;border-radius:12px;font-size:10px;
+  display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;
 }
 .nav button.active{background:#1a3855;color:var(--accent)}
 .nav .ico{font-size:17px;line-height:1.1}
@@ -201,7 +206,7 @@ textarea.field{min-height:70px;resize:vertical}
 }
 :focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px}
 @media(max-width:700px){
-  .app{padding:12px 12px calc(112px + env(safe-area-inset-bottom))}
+  .app{padding:12px 12px calc(88px + env(safe-area-inset-bottom))}
   .top{margin-bottom:17px;padding:9px 11px}
   .hero{grid-template-columns:1fr}
   .heroMain{padding:22px}
@@ -211,8 +216,11 @@ textarea.field{min-height:70px;resize:vertical}
   .grid2,.cards{grid-template-columns:1fr}
   .date{display:none}
   .section{margin:22px 0 11px}
-  .nav{gap:1px;padding-left:5px;padding-right:5px}
-  .nav button{padding:8px 10px;min-width:55px}
+  .nav{gap:2px;padding-left:5px;padding-right:5px}
+  .nav button{padding:7px 2px;font-size:9px}
+  .nav .ico{font-size:18px}
+  .more-grid{grid-template-columns:1fr;gap:8px}
+  .more-card{padding:13px}
   .formgrid{grid-template-columns:1fr}
   .modalback{padding:8px;align-items:flex-end}
   .modal{border-radius:23px 23px 15px 15px;max-height:90dvh;padding:18px}
@@ -272,6 +280,19 @@ textarea.field{min-height:70px;resize:vertical}
 <div class="section"><h2>Прогноз достижения целей</h2></div><div class="panel" id="axForecast"></div>
 <div class="section"><h2>Защита от накрутки</h2></div><div class="panel" id="axIntegrity"></div>
 </section>
+<section class="page" id="page-more">
+<div class="section"><h2>Все разделы LEVEL</h2></div>
+<p class="sub">Основные инструменты собраны здесь. Содержимое каждого раздела осталось прежним — выбери, куда перейти.</p>
+<div class="more-grid">
+<button class="more-card" onclick="showPage('campaign')"><span class="more-icon">⚑</span><span><strong>Кампания</strong><small>Большие цели, испытания и награды</small></span><span class="more-arrow">›</span></button>
+<button class="more-card" onclick="showPage('analytics')"><span class="more-icon">▥</span><span><strong>Аналитика</strong><small>Прогресс, показатели и динамика</small></span><span class="more-arrow">›</span></button>
+<button class="more-card" onclick="showPage('strategy')"><span class="more-icon">⌘</span><span><strong>Стратегия</strong><small>Советник, планирование и развитие</small></span><span class="more-arrow">›</span></button>
+<button class="more-card" onclick="showPage('habits')"><span class="more-icon">◷</span><span><strong>Привычки</strong><small>Регулярность и ежедневные действия</small></span><span class="more-arrow">›</span></button>
+<button class="more-card" onclick="showPage('projects')"><span class="more-icon">◇</span><span><strong>Проекты</strong><small>Этапы, сроки и результаты</small></span><span class="more-arrow">›</span></button>
+<button class="more-card" onclick="showPage('finance')"><span class="more-icon">₽</span><span><strong>Финансы</strong><small>Доходы, расходы и цели</small></span><span class="more-arrow">›</span></button>
+<button class="more-card" onclick="showPage('health')"><span class="more-icon">♡</span><span><strong>Здоровье</strong><small>Физическое состояние и показатели</small></span><span class="more-arrow">›</span></button>
+<button class="more-card" onclick="showPage('settings')"><span class="more-icon">⚙</span><span><strong>Настройки</strong><small>Аккаунт, синхронизация и данные</small></span><span class="more-arrow">›</span></button>
+</div></section>
 <section class="page" id="page-settings"><div class="section"><h2>Настройки и данные</h2></div><div class="panel"><h3>Синхронизация с ChatGPT</h3>
 <p class="sub">Подключи аккаунт один раз. LEVEL будет автоматически отправлять изменения в защищённую облачную базу, а ChatGPT сможет читать актуальные записи через подключённый Supabase.</p>
 <div id="syncStatus" class="healthnote" style="margin-top:12px">Пока не подключено. Данные остаются на этом устройстве.</div>
@@ -312,7 +333,13 @@ textarea.field{min-height:70px;resize:vertical}
 <p class="muted" style="font-size:11px">Резервную копию всё равно полезно периодически сохранять отдельно.</p>
 </div><div class="panel" style="margin-top:12px"><h3>Пауза / восстановление</h3><p class="sub">Если болезнь или объективные обстоятельства мешают выполнять план, включи паузу. Уже заработанный XP не уменьшается.</p><button class="btn" id="pauseBtn" onclick="togglePause()">Включить паузу на сегодня</button></div><div class="panel" style="margin-top:12px"><h3>Сброс</h3><p class="sub">Удалит все данные LEVEL на этом устройстве.</p><button class="btn danger" onclick="resetData()">Удалить мои данные</button></div><p class="muted" style="font-size:11px;margin-top:15px">LEVEL 3.1 · Personal Growth RPG</p></section>
 </main></div>
-<nav class="nav"><button class="active" data-page="home" onclick="showPage('home')"><span class="ico">⌂</span>Обзор</button><button data-page="quests" onclick="showPage('quests')"><span class="ico">☷</span>Квесты</button><button data-page="campaign" onclick="showPage('campaign')"><span class="ico">⚑</span>Кампания</button><button data-page="analytics" onclick="showPage('analytics')"><span class="ico">▥</span>Аналитика</button><button data-page="strategy" onclick="showPage('strategy')"><span class="ico">⌘</span>Стратегия</button><button data-page="goals" onclick="showPage('goals')"><span class="ico">◎</span>Цели</button><button data-page="character" onclick="showPage('character')"><span class="ico">✳</span>Персонаж</button><button data-page="habits" onclick="showPage('habits')"><span class="ico">◷</span>Привычки</button><button data-page="projects" onclick="showPage('projects')"><span class="ico">◇</span>Проекты</button><button data-page="finance" onclick="showPage('finance')"><span class="ico">₽</span>Финансы</button><button data-page="health" onclick="showPage('health')"><span class="ico">♡</span>Здоровье</button><button data-page="settings" onclick="showPage('settings')"><span class="ico">⚙</span>Ещё</button></nav>
+<nav class="nav" aria-label="Основная навигация">
+<button class="active" data-page="home" onclick="showPage('home')"><span class="ico">⌂</span>Обзор</button>
+<button data-page="quests" onclick="showPage('quests')"><span class="ico">☷</span>Квесты</button>
+<button data-page="goals" onclick="showPage('goals')"><span class="ico">◎</span>Цели</button>
+<button data-page="character" onclick="showPage('character')"><span class="ico">✳</span>Персонаж</button>
+<button data-page="more" onclick="showPage('more')"><span class="ico">•••</span>Ещё</button>
+</nav>
 <div class="modalback" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Новая запись</h2><button class="close" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div><div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 <script>
@@ -388,7 +415,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmt(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)+' ₽'}
 function toast(s){let e=document.getElementById('toast');e.textContent=s;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}
-function showPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');document.querySelectorAll('.nav button').forEach(e=>e.classList.toggle('active',e.dataset.page===p));window.scrollTo({top:0,behavior:'smooth'});render()}
+function showPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));const target=document.getElementById('page-'+p);if(!target)return;target.classList.add('active');const secondary=['campaign','analytics','strategy','habits','projects','finance','health','settings'];const active=p==='more'||secondary.includes(p)?'more':p;document.querySelectorAll('.nav button').forEach(e=>e.classList.toggle('active',e.dataset.page===active));window.scrollTo({top:0,behavior:'smooth'});render()}
 function modal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalBack').classList.add('show')}
 function closeModal(){document.getElementById('modalBack').classList.remove('show')}
 function openModal(type,ref){
