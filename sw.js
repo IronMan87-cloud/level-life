@@ -1,5 +1,5 @@
-const CACHE='level-shell-v32';
-const FILES=['./','./index.html','./level-advanced.js','./manifest.webmanifest','./icon.svg'];
+const CACHE='level-shell-v33';
+const FILES=['./','./index.html','./level-advanced.js','./level-autopilot.js','./manifest.webmanifest','./icon.svg'];
 
 self.addEventListener('install',event=>{
  event.waitUntil((async()=>{
