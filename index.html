@@ -549,6 +549,7 @@ async function setSyncPassword(){
  if(password!==confirmPassword)return toast('Пароли не совпадают');
  const button=document.getElementById('syncSetPasswordBtn');if(button){button.disabled=true;button.textContent='Сохраняю…'}
  try{
+  const accountEmail=syncUser.email||'';
   const {error}=await supabaseClient.auth.updateUser({password});
   if(error)throw error;
   authSetupMode=false;
@@ -556,10 +557,10 @@ async function setSyncPassword(){
   window.history.replaceState({},document.title,cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
   const {error:signOutError}=await supabaseClient.auth.signOut();
   syncUser=null;showSyncState(false);
+  const emailInput=document.getElementById('syncEmail');if(emailInput&&accountEmail)emailInput.value=accountEmail;
   setSyncStatus(signOutError
-   ?'Пароль создан. Теперь вернись в установленное приложение и войди по email и паролю. Если Safari остался авторизован, выйди из него отдельно.'
+   ?'Пароль создан. Вернись в установленное приложение и войди по email и паролю. Если Safari остался авторизован, заверши там сеанс вручную.'
    :'Пароль создан. Вернись в установленное приложение LEVEL и войди по email и паролю. Данные из Safari не синхронизировались.');
-  const email=document.getElementById('syncEmail');if(email&&syncUser?.email)email.value=syncUser.email;
  }catch(error){
   console.error('LEVEL password setup failed',error);
   setSyncStatus('Не удалось сохранить пароль: '+(error.message||'попробуй ещё раз'));
