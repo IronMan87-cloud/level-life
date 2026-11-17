@@ -416,9 +416,20 @@ function saveHealthProfile(){const h=Number(val('fHeight')),w=Number(val('fProfi
 function deleteTransaction(tid){if(confirm('Удалить эту финансовую операцию?')){db.transactions=db.transactions.filter(x=>x.id!==tid);save()}}
 function deleteMeal(mid){if(confirm('Удалить эту запись о питании?')){db.health.meals=db.health.meals.filter(m=>m.id!==mid);save()}}
 function deleteWeight(wid){const logs=db.health.weightLogs||[],index=logs.findIndex(w=>w.id===wid);if(index<0)return;if(confirm('Удалить это измерение?')){const removed=logs[index];db.health.weightLogs=logs.filter(w=>w.id!==wid);if(index===0&&Number(db.health.weightKg)===Number(removed.weightKg)&&db.health.weightLogs.length)db.health.weightKg=Number(db.health.weightLogs[0].weightKg);save()}}
-function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='level-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href);toast('Резервная копия создана')}
+function exportData(){
+ const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+ link.href=url;link.download='level-backup-'+today()+'.json';document.body.appendChild(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);toast('Резервная копия подготовлена');
+}
 function safeImportedId(value){return typeof value==='string'&&/^[A-Za-z0-9_-]{1,80}$/.test(value)?value:id()}
-function normalizeImportedRecords(value){return Array.isArray(value)?value.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)).map(item=>({...item,id:safeImportedId(item.id)})):[]}
+function normalizeImportedRecords(value){
+ if(!Array.isArray(value))return [];
+ const seen=new Set();
+ return value.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)).map(item=>{
+  let recordId=safeImportedId(item.id);if(seen.has(recordId))recordId=id();seen.add(recordId);
+  return {...item,id:recordId};
+ });
+}
 function importData(e){
  const file=e.target.files&&e.target.files[0];if(!file)return;
  const reader=new FileReader();
@@ -475,7 +486,10 @@ const authHashParams=new URLSearchParams(window.location.hash.slice(1));
 let supabaseClient=null,syncUser=null,syncTimer=null,syncBusy=false,syncQueued=false,syncConflictData=null,authSetupMode=new URLSearchParams(window.location.search).get('auth_setup')==='1'||['magiclink','recovery'].includes(authHashParams.get('type'))||authHashParams.has('error_code')||authHashParams.has('error_description');
 function readSyncMeta(){try{return JSON.parse(localStorage.getItem(SYNC_META_KEY)||'{}')}catch(_){return {}}}
 function writeSyncMeta(patch){localStorage.setItem(SYNC_META_KEY,JSON.stringify({...readSyncMeta(),...patch}))}
-function markLocalChange(){const meta=readSyncMeta();writeSyncMeta({localModifiedAt:new Date().toISOString(),localRevision:(meta.localRevision||0)+1,dirty:true});scheduleCloudSync()}
+function markLocalChange(){
+ try{const meta=readSyncMeta();writeSyncMeta({localModifiedAt:new Date().toISOString(),localRevision:(meta.localRevision||0)+1,dirty:true});scheduleCloudSync()}
+ catch(error){console.error('LEVEL sync metadata save failed',error);setSyncStatus('Данные сохранены на устройстве, но статус синхронизации не обновился. Сделай резервную копию.')}
+}
 function setSyncStatus(message){const el=document.getElementById('syncStatus');if(el)el.textContent=message}
 function showSyncState(signedIn){
  const a=document.getElementById('syncSignedOut'),b=document.getElementById('syncSignedIn');
@@ -620,7 +634,8 @@ async function signOutSync(){
  if(!supabaseClient)return;
  const {error}=await supabaseClient.auth.signOut();
  if(error){setSyncStatus('Ошибка отключения: '+error.message);return}
- syncUser=null;showSyncState(false);setSyncStatus('Аккаунт отключён. Локальные данные сохранены на устройстве.');
+ if(syncTimer){clearTimeout(syncTimer);syncTimer=null}
+ syncUser=null;hideSyncConflict();showSyncState(false);setSyncStatus('Аккаунт отключён. Локальные данные сохранены на устройстве.');
 }
 async function initSyncForUser(user){
  if(!user||!supabaseClient)return;
@@ -638,7 +653,7 @@ function initCloudSync(){
  showSyncState(false);
  supabaseClient.auth.onAuthStateChange((event,session)=>{
   if(session?.user){setTimeout(()=>initSyncForUser(session.user),0)}
-  else{syncUser=null;showSyncState(false)}
+  else{syncUser=null;hideSyncConflict();showSyncState(false)}
  });
  supabaseClient.auth.getSession().then(({data,error})=>{
   if(error){setSyncStatus('Не удалось проверить вход: '+error.message);return}
