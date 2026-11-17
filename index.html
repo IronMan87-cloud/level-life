@@ -487,7 +487,7 @@ let health=db.health||{heightCm:185,weightKg:70,meals:[],weightLogs:[]},bmi=heal
 renderCampaign();renderAnalytics();renderAchievements();
 }
 
-function weekStart(){let x=new Date();x.setHours(0,0,0,0);x.setDate(x.getDate()-6);return x.toISOString().slice(0,10)}
+function weekStart(){let x=new Date();x.setHours(0,0,0,0);x.setDate(x.getDate()-6);return localDateKey(x)}
 function localDateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function recentDone(days){let cut=new Date();cut.setHours(0,0,0,0);cut.setDate(cut.getDate()-(days-1));let from=localDateKey(cut);return db.tasks.filter(t=>t.done&&t.date>=from&&!t.replaced)}
 function openCampaignSetup(){let opts=db.goals.map(g=>'<option value="'+g.id+'" '+(db.campaign?.goalId===g.id?'selected':'')+'>'+esc(g.title)+'</option>').join('');modal('Главная кампания','<label>Выбери основную цель</label><select class="field" id="campaignGoal">'+opts+'</select><label>Личная награда за завершение кампании</label><input class="field" id="campaignReward" maxlength="100" value="'+esc(db.campaign?.reward||'')+'" placeholder="Например, поездка или покупка"><button class="btn primary" onclick="saveCampaign()">Сохранить кампанию</button>')}
