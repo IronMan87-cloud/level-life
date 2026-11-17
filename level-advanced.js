@@ -136,6 +136,7 @@ function renderResultsCenter(){
  const events=[];
  const add=(date,kind,title,detail,source,link='')=>{if(!title)return;events.push({date:String(date||''),kind,title:String(title),detail:String(detail||''),source,link:/^https?:\/\//i.test(String(link||''))?String(link):''})};
  const proofs=db.proofs.filter(p=>p.status==='approved');
+ db.tasks.filter(t=>t.done&&String(t.completionNote||'').trim()).forEach(t=>add(t.date,'Действия',t.title,t.completionNote,'Зафиксированный исход'));
  proofs.forEach(p=>{const skill=db.skills.find(s=>s.id===p.skill);add(p.date,'Навыки',p.title,(skill?skill.title+' · ':'')+[p.value,p.unit].filter(Boolean).join(' ')+' · '+(p.desc||''),'Подтверждено')});
  db.checkpoints.filter(c=>c.status==='completed').forEach(c=>{const sk=db.skills.find(s=>s.id===c.skillId);add(c.completedAt||c.due||c.createdAt,'Навыки',c.title,(sk?sk.title+' · ':'')+(c.result||c.criterion),'Испытание пройдено',c.evidenceUrl)});
  db.projects.filter(p=>p.done).forEach(p=>add(p.completedAt||p.createdAt,'Проекты',p.title,p.desc||'Все этапы проекта завершены','Проект'));
