@@ -4,28 +4,215 @@
 <meta name="theme-color" content="#080f1d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="LEVEL — личная RPG-система целей, действий и роста."><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon.svg"><title>LEVEL — личная RPG</title>
 <style>
-:root{--bg:#10120f;--panel:#191d17;--panel2:#22271e;--line:#30372b;--text:#f1f3ec;--muted:#9ba391;--lime:#c8f169;--red:#f08075;--blue:#8db7f5;--gold:#e9c46a;--r:19px}
-*{box-sizing:border-box}html{background:var(--bg);color-scheme:dark}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#28351b 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}button,input,textarea,select{font:inherit}button{cursor:pointer;color:inherit}.app{max-width:1120px;margin:auto;padding:20px 22px 112px}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.17em}.mark{width:35px;height:35px;border-radius:12px;background:var(--lime);display:grid;place-items:center;color:#10120f;font-size:20px}.date,.muted,.sub{color:var(--muted)}.date{font-size:12px}.profile{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px}.avatar{width:31px;height:31px;border-radius:50%;background:#303a27;color:var(--lime);display:grid;place-items:center}
-h1{font-size:clamp(28px,5vw,42px);line-height:1.08;letter-spacing:-.045em;margin:0 0 9px}h2{font-size:19px;margin:0}h3{font-size:15px;margin:0 0 12px}.sub{margin:0;font-size:13px}.eyebrow{font-size:10px;font-weight:850;letter-spacing:.15em;color:var(--lime);text-transform:uppercase;margin-bottom:12px}.hero{display:grid;grid-template-columns:1.35fr .8fr;gap:13px}.heroMain,.heroSide,.panel,.stat,.item{background:linear-gradient(145deg,#1e231b,#171a15);border:1px solid var(--line);border-radius:var(--r)}.heroMain{padding:25px;position:relative;overflow:hidden}.heroSide{padding:22px;display:flex;flex-direction:column;justify-content:space-between}.levelrow{display:flex;justify-content:space-between;align-items:end;margin-top:23px}.level{font-size:54px;font-weight:900;line-height:1;letter-spacing:-.06em}.level small{font-size:13px;color:var(--muted);letter-spacing:0}.big{font-size:29px;font-weight:850;letter-spacing:-.04em}.progress{height:7px;background:#343b2e;border-radius:10px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;background:var(--lime);border-radius:10px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:13px 0 20px}.stat{padding:14px}.stat label{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.stat strong{font-size:22px}.stat em{font-size:11px;color:var(--lime);font-style:normal;margin-left:5px}.section{display:flex;justify-content:space-between;align-items:center;margin:25px 0 12px}.section button{font-size:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.panel{padding:17px}.task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff0d}.task:last-child{border:0}.check{width:22px;height:22px;flex:none;border:1px solid #606a55;border-radius:7px;background:transparent}.check.done{background:var(--lime);color:#111;border-color:var(--lime)}.tasktext{flex:1;min-width:0}.tasktext.done{text-decoration:line-through;color:var(--muted)}.tag{font-size:10px;padding:4px 7px;background:#2b3225;color:#b8c3a9;border-radius:7px}.empty{font-size:13px;color:var(--muted);padding:12px 0}
-.page{display:none}.page.active{display:block}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.item{padding:16px}.itemtop{display:flex;justify-content:space-between;gap:10px}.item p{font-size:12px;color:var(--muted);margin:5px 0}.itemfoot{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);gap:8px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.btn{border:1px solid var(--line);background:var(--panel2);padding:10px 13px;border-radius:11px;font-size:12px}.btn.primary{background:var(--lime);border-color:var(--lime);color:#11150c;font-weight:850}.btn.danger{color:var(--red)}.link{border:0;background:none;color:var(--lime);padding:5px}.field{width:100%;background:#11140f;border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--text);outline:none}.field:focus{border-color:var(--lime)}textarea.field{min-height:70px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modalback{display:none;position:fixed;inset:0;background:#000b;z-index:30;align-items:end;justify-content:center;padding:12px}.modalback.show{display:flex}.modal{width:min(100%,540px);max-height:88vh;overflow:auto;background:#1a1e17;border:1px solid var(--line);border-radius:22px;padding:20px}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.modalhead h2{font-size:18px}.modal label{display:block;font-size:11px;color:var(--muted);margin:11px 0 6px}.modal .btn{margin-top:12px}.close{border:0;background:none;font-size:23px;color:var(--muted)}.nav{position:fixed;z-index:10;bottom:0;left:0;right:0;background:#141712ed;backdrop-filter:blur(18px);border-top:1px solid var(--line);display:flex;justify-content:flex-start;gap:3px;overflow-x:auto;padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom))}.nav button{flex:none;border:0;background:none;color:var(--muted);padding:8px 12px;border-radius:12px;font-size:10px;display:flex;flex-direction:column;gap:2px;align-items:center}.nav button.active{background:#2a3321;color:var(--lime)}.nav .ico{font-size:17px}.healthgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:13px 0}.healthmetric{background:linear-gradient(145deg,#1e231b,#171a15);border:1px solid var(--line);border-radius:15px;padding:15px}.healthmetric label{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.healthmetric strong{font-size:23px}.healthmetric small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.meal{padding:13px 0;border-bottom:1px solid #ffffff0d}.meal:last-child{border:0}.mealhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.meal p{margin:5px 0 0;color:var(--muted);font-size:12px}.healthnote{padding:12px;border-radius:12px;background:#252d20;color:#c4cfb6;font-size:11px;margin-top:12px}.moneyhero{padding:22px;border-radius:17px;background:linear-gradient(130deg,#29371e,#1a2116);border:1px solid #465437;margin-bottom:12px}.moneyhero .big{font-size:35px;color:var(--lime)}.moneyrow{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #ffffff0d}.proof{padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:9px}.proof small{color:var(--muted)}.proof p{font-size:13px;margin:5px 0}.toast{position:fixed;z-index:60;bottom:88px;left:50%;transform:translate(-50%,12px);opacity:0;background:#e5f5c6;color:#17200e;padding:10px 15px;border-radius:12px;font-weight:750;font-size:12px;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:700px){.app{padding:16px 14px 105px}.hero{grid-template-columns:1fr}.heroMain{padding:21px}.heroSide{min-height:145px}.stats{grid-template-columns:repeat(2,1fr);gap:8px}.grid2,.cards{grid-template-columns:1fr}.date{display:none}.nav{justify-content:flex-start}.formgrid{grid-template-columns:1fr}}
-
-/* LEVEL 3.0 — midnight blue visual system */
-:root{--bg:#080f1d;--panel:#101c30;--panel2:#162640;--line:#263a57;--text:#edf5ff;--muted:#91a5c1;--lime:#70c8ff;--red:#ff8292;--blue:#70c8ff;--gold:#f2c879;--r:22px}
-html{background:var(--bg)}body{background:radial-gradient(ellipse at 12% -12%,#183a65 0,transparent 38%),radial-gradient(ellipse at 100% 12%,#14294a 0,transparent 34%),var(--bg);color:var(--text);letter-spacing:.005em}
-.app{max-width:1180px;padding-top:24px}.top{padding:11px 14px;margin:-5px -4px 24px;border:1px solid #29415f;border-radius:18px;background:#0d192be8;backdrop-filter:blur(18px)}
-.brand{letter-spacing:.2em}.mark{background:linear-gradient(145deg,#a7e4ff,#4aa9ef);box-shadow:0 5px 24px #4aa9ef35;color:#071426;border-radius:12px}
-h1{letter-spacing:-.055em}.eyebrow{color:#83d4ff}.heroMain,.heroSide,.panel,.stat,.item{background:linear-gradient(145deg,#13233aee,#0e1929f2);border-color:#263d5c;box-shadow:0 10px 35px #02091625}
-.heroMain{background:radial-gradient(circle at 90% 10%,#234d78 0,transparent 36%),linear-gradient(145deg,#172d49,#0e1a2b)}.heroSide{background:linear-gradient(145deg,#142b47,#101b2c)}
-.progress{background:#263b57}.progress span{background:linear-gradient(90deg,#55b8f4,#a0e4ff);box-shadow:0 0 16px #6cc9ff45}
-.stat{border-radius:17px}.stat strong{letter-spacing:-.035em}.section{margin-top:28px}.panel{border-radius:20px}.item{border-radius:19px}.btn{background:#172943;border-color:#2b4566;border-radius:13px;transition:transform .16s ease,border-color .16s ease,background .16s ease}.btn:active{transform:scale(.98)}.btn.primary{background:linear-gradient(135deg,#8cddff,#55b4f2);border-color:#8cddff;color:#071629;box-shadow:0 5px 18px #55b4f228}.btn.danger{color:#ff9ba8}.link{color:#82d2ff}.field{background:#0a1423;border-color:#2a4262;border-radius:12px}.field:focus{border-color:#70c8ff;box-shadow:0 0 0 3px #70c8ff20}
-.nav{background:#091424ed;border-color:#263c5a;backdrop-filter:blur(22px);padding-top:10px}.nav button{border-radius:13px;transition:background .15s ease,color .15s ease}.nav button.active{background:#183553;color:#8edaff}.nav button:active{transform:scale(.97)}
-.modalback{align-items:center;background:#020814c9;backdrop-filter:blur(8px)}.modal{background:linear-gradient(155deg,#14243a,#0d1929);border-color:#345071;border-radius:24px;box-shadow:0 24px 90px #0009}.modalhead{position:sticky;top:-20px;background:#14243a;padding:4px 0 12px;z-index:2}.close{width:36px;height:36px;border-radius:11px;background:#203652}
-.healthmetric{background:linear-gradient(145deg,#183452,#11233a);border-color:#2c4d70;border-radius:18px}.healthnote{background:#172c43;color:#b9d8ee;border:1px solid #2a4866;border-radius:14px}.moneyhero{background:radial-gradient(circle at 90% 0,#24517a 0,transparent 40%),linear-gradient(130deg,#193b5c,#11243a);border-color:#315578;border-radius:20px}.moneyhero .big{color:#91dcff}
-.empty{color:#9db0c8}.tag{background:#203752;color:#b9d9f2}.check{border-color:#5b789a}.check.done{background:#72caff;border-color:#72caff;color:#071629}
-.toast{background:#d9f3ff;color:#0b2035;box-shadow:0 8px 28px #0005}
-@media(hover:hover){.btn:hover{border-color:#6cbce9;background:#1d3553}.btn.primary:hover{background:linear-gradient(135deg,#b0e9ff,#72c8fa)}.nav button:hover{background:#162d49;color:#a5e1ff}}
-@media(max-width:700px){.app{padding:12px 12px 112px}.top{margin:0 0 17px;padding:9px 11px}.heroMain{padding:22px}.heroSide{border-radius:19px}.stats{gap:8px}.stat{padding:13px}.section{margin:22px 0 11px}.nav{gap:1px;padding-left:5px;padding-right:5px}.nav button{padding:8px 10px}.modalback{padding:8px;align-items:flex-end}.modal{border-radius:24px 24px 16px 16px;max-height:90dvh;padding:18px}}
+:root{
+  color-scheme:dark;
+  --bg:#091525;
+  --surface:#102139;
+  --surface-raised:#142a44;
+  --surface-soft:#1a3552;
+  --line:#29445f;
+  --text:#edf6ff;
+  --muted:#9aafc8;
+  --accent:#a9def5;
+  --accent-strong:#72bfe6;
+  --accent-ink:#092035;
+  --red:#f08d9a;
+  --gold:#e8c98b;
+  --r:20px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:var(--text);
+  background:radial-gradient(ellipse at 14% -18%,#183553 0,transparent 38%),var(--bg);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;color:inherit}
+button:disabled{opacity:.55;cursor:wait}
+.app{max-width:1120px;margin:0 auto;padding:22px 22px 118px}
+.top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 0 26px;padding:11px 14px;
+  border:1px solid #29435e;border-radius:18px;
+  background:#0d1a2be8;backdrop-filter:blur(18px);
+}
+.brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:.17em}
+.mark{
+  width:36px;height:36px;display:grid;place-items:center;border-radius:12px;
+  color:var(--accent-ink);font-size:20px;font-weight:900;
+  background:linear-gradient(145deg,#d7efff,#82c8e9);
+  box-shadow:0 4px 16px #6bbce826;
+}
+.date,.muted,.sub{color:var(--muted)}
+.date{font-size:12px;text-transform:capitalize}
+.profile{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.avatar{
+  width:31px;height:31px;display:grid;place-items:center;border-radius:50%;
+  background:#1b3855;color:var(--accent);font-weight:750;
+}
+h1{font-size:clamp(29px,5vw,43px);line-height:1.08;letter-spacing:-.05em;margin:0 0 10px}
+h2{font-size:19px;letter-spacing:-.025em;margin:0}
+h3{font-size:15px;letter-spacing:-.01em;margin:0 0 12px}
+.sub{margin:0;font-size:13px;line-height:1.55}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.hero{display:grid;grid-template-columns:1.35fr .8fr;gap:13px}
+.heroMain,.heroSide,.panel,.stat,.item{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+}
+.heroMain{
+  padding:27px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#15304b 0%,#102139 65%);
+}
+.heroMain:after{
+  content:"";position:absolute;width:230px;height:230px;right:-130px;top:-145px;
+  border-radius:50%;border:1px solid #a9def51c;pointer-events:none;
+}
+.heroSide{padding:22px;display:flex;flex-direction:column;justify-content:space-between;background:#112640}
+.levelrow{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-top:24px}
+.level{font-size:54px;font-weight:850;line-height:1;letter-spacing:-.06em}
+.level small{font-size:13px;color:var(--muted);letter-spacing:0}
+.big{font-size:29px;font-weight:800;letter-spacing:-.04em}
+.progress{height:7px;background:#263d56;border-radius:10px;overflow:hidden;margin:12px 0}
+.progress span{display:block;height:100%;background:var(--accent-strong);border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:13px 0 20px}
+.stat{padding:15px;background:#102139;border-radius:17px}
+.stat label{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}
+.stat strong{font-size:22px;letter-spacing:-.035em}
+.stat em{font-size:11px;color:var(--accent);font-style:normal;margin-left:5px}
+.section{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:26px 0 12px}
+.section button{font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.panel{padding:18px;background:#102139}
+.task{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #d9edff10}
+.task:last-child{border:0}
+.check{
+  width:22px;height:22px;flex:none;border:1px solid #63809b;border-radius:7px;
+  background:transparent;display:grid;place-items:center;font-size:13px;
+}
+.check.done{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tasktext{flex:1;min-width:0}
+.tasktext.done{text-decoration:line-through;color:var(--muted)}
+.tag{font-size:10px;padding:4px 8px;background:#1a3550;color:#c2dced;border-radius:7px;white-space:nowrap}
+.empty{font-size:13px;color:var(--muted);padding:12px 0}
+.page{display:none}
+.page.active{display:block;animation:page-in .18s ease-out}
+@keyframes page-in{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.item{padding:17px;background:#102139}
+.itemtop{display:flex;justify-content:space-between;gap:10px}
+.item p{font-size:12px;color:var(--muted);margin:5px 0;line-height:1.5}
+.itemfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.btn{
+  border:1px solid #34516d;background:#172e48;padding:10px 14px;
+  border-radius:12px;font-size:12px;font-weight:650;
+  transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+.btn:active{transform:scale(.985)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:800}
+.btn.danger{color:#ff9eaa}
+.link{border:0;background:none;color:var(--accent);padding:5px;font-size:12px}
+.field{
+  width:100%;background:#0b192a;border:1px solid #304b68;border-radius:11px;
+  padding:11px 12px;color:var(--text);outline:none;
+}
+.field:focus{border-color:var(--accent-strong);box-shadow:0 0 0 3px #72bfe61c}
+textarea.field{min-height:70px;resize:vertical}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.modalback{
+  display:none;position:fixed;inset:0;background:#020a14c9;backdrop-filter:blur(7px);
+  z-index:30;align-items:center;justify-content:center;padding:12px;
+}
+.modalback.show{display:flex}
+.modal{
+  width:min(100%,540px);max-height:90dvh;overflow:auto;
+  background:#11243a;border:1px solid #35516d;border-radius:22px;padding:20px;
+  box-shadow:0 24px 80px #0007;
+}
+.modalhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.modalhead h2{font-size:18px}
+.modal label{display:block;font-size:11px;color:var(--muted);margin:11px 0 6px}
+.modal .btn{margin-top:12px}
+.close{
+  border:0;width:36px;height:36px;border-radius:11px;
+  background:#1c3854;font-size:22px;color:var(--muted);
+}
+.nav{
+  position:fixed;z-index:10;bottom:0;left:0;right:0;
+  background:#091727ed;backdrop-filter:blur(20px);
+  border-top:1px solid #29425d;display:flex;justify-content:flex-start;gap:3px;
+  overflow-x:auto;overscroll-behavior-x:contain;
+  padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));
+  scrollbar-width:none;
+}
+.nav::-webkit-scrollbar{display:none}
+.nav button{
+  flex:none;border:0;background:none;color:var(--muted);
+  padding:8px 12px;border-radius:12px;font-size:10px;
+  display:flex;flex-direction:column;gap:3px;align-items:center;min-width:57px;
+}
+.nav button.active{background:#1a3855;color:var(--accent)}
+.nav .ico{font-size:17px;line-height:1.1}
+.healthgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:13px 0}
+.healthmetric{
+  background:#132b45;border:1px solid #2c4966;border-radius:16px;padding:15px;
+}
+.healthmetric label{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}
+.healthmetric strong{font-size:23px}
+.healthmetric small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.meal{padding:13px 0;border-bottom:1px solid #d9edff10}
+.meal:last-child{border:0}
+.mealhead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.meal p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.healthnote{
+  padding:13px;border-radius:13px;background:#162f49;color:#c1d9eb;
+  border:1px solid #294865;font-size:11px;margin-top:12px;line-height:1.55;
+}
+.moneyhero{
+  padding:23px;border-radius:19px;background:linear-gradient(135deg,#173b59,#122a43);
+  border:1px solid #315574;margin-bottom:12px;
+}
+.moneyhero .big{font-size:35px;color:var(--accent)}
+.moneyrow{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #d9edff10}
+.proof{padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:9px;background:#0e1d30}
+.proof small{color:var(--muted)}
+.proof p{font-size:13px;margin:5px 0}
+.toast{
+  position:fixed;z-index:60;bottom:calc(88px + env(safe-area-inset-bottom));left:50%;
+  transform:translate(-50%,12px);opacity:0;background:#d7efff;color:#092035;
+  padding:10px 15px;border-radius:12px;font-weight:750;font-size:12px;
+  transition:.2s;pointer-events:none;box-shadow:0 8px 28px #0005;
+  max-width:calc(100vw - 32px);text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(hover:hover){
+  .btn:hover{border-color:#6daed2;background:#203c58}
+  .btn.primary:hover{background:#c2eaff}
+  .nav button:hover{background:#17314b;color:#c4eaff}
+}
+:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px}
+@media(max-width:700px){
+  .app{padding:12px 12px calc(112px + env(safe-area-inset-bottom))}
+  .top{margin-bottom:17px;padding:9px 11px}
+  .hero{grid-template-columns:1fr}
+  .heroMain{padding:22px}
+  .heroSide{min-height:145px;padding:19px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat{padding:13px}
+  .grid2,.cards{grid-template-columns:1fr}
+  .date{display:none}
+  .section{margin:22px 0 11px}
+  .nav{gap:1px;padding-left:5px;padding-right:5px}
+  .nav button{padding:8px 10px;min-width:55px}
+  .formgrid{grid-template-columns:1fr}
+  .modalback{padding:8px;align-items:flex-end}
+  .modal{border-radius:23px 23px 15px 15px;max-height:90dvh;padding:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
 </style></head><body><div class="app">
 <header class="top"><div class="brand"><div class="mark">L</div>LEVEL</div><div class="date" id="today"></div><div class="profile"><div class="avatar">Я</div><span>Мой путь</span></div></header>
 <main>
@@ -45,18 +232,32 @@ h1{letter-spacing:-.055em}.eyebrow{color:#83d4ff}.heroMain,.heroSide,.panel,.sta
 <p class="sub">Подключи аккаунт один раз. LEVEL будет автоматически отправлять изменения в защищённую облачную базу, а ChatGPT сможет читать актуальные записи через подключённый Supabase.</p>
 <div id="syncStatus" class="healthnote" style="margin-top:12px">Пока не подключено. Данные остаются на этом устройстве.</div>
 <div id="syncSignedOut" style="margin-top:12px">
-<label for="syncEmail">Твой email для входа</label><input class="field" id="syncEmail" type="email" autocomplete="email" placeholder="name@example.com">
-<button class="btn primary" id="syncLinkBtn" style="width:100%;margin-top:10px" onclick="sendSyncLink()">Отправить ссылку на email</button>
-<div id="syncLinkBox" style="display:none;margin-top:14px">
-<label for="syncMagicLink">Скопируй ссылку из письма и вставь сюда</label>
-<textarea class="field" id="syncMagicLink" rows="3" autocomplete="off" placeholder="Вставь сюда ссылку из письма Supabase"></textarea>
-<button class="btn primary" id="syncVerifyBtn" style="width:100%;margin-top:10px" onclick="verifySyncLink()">Подтвердить ссылку и подключить</button>
-<p class="muted" style="font-size:11px;margin-top:8px">Важно: не открывай ссылку. В почте нажми и удерживай её, выбери «Скопировать ссылку», затем вставь сюда. Так авторизация завершится именно в LEVEL, а не в Safari.</p>
+<label for="syncEmail">Email аккаунта</label>
+<input class="field" id="syncEmail" type="email" autocomplete="username" placeholder="name@example.com">
+<label for="syncPassword">Пароль LEVEL</label>
+<input class="field" id="syncPassword" type="password" autocomplete="current-password" placeholder="Твой пароль">
+<button class="btn primary" id="syncPasswordBtn" style="width:100%;margin-top:12px" onclick="signInSync()">Войти и синхронизировать</button>
+<div class="toolbar" style="margin-top:12px">
+<button class="btn" id="syncLinkBtn" onclick="sendSyncLink()">Первое подключение / восстановить пароль</button>
+</div>
+<div id="syncLinkBox" style="display:none;margin-top:12px" class="healthnote">
+Ссылка отправлена. Открой её один раз из письма — она вернёт тебя в LEVEL для создания пароля. Не копируй ссылку и не вставляй её повторно.
 </div>
 </div>
 <div id="syncSignedIn" style="display:none;margin-top:12px">
 <div class="itemfoot"><span id="syncAccountLabel">Аккаунт подключён</span><span class="tag">Облако</span></div>
+<div id="syncPasswordSetup" style="display:none;margin-top:14px">
+<h3>Создай пароль для LEVEL</h3>
+<p class="sub">Email подтверждён. Пароль нужен, чтобы безопасно входить прямо из установленного приложения — без повторного открытия одноразовых ссылок.</p>
+<label for="syncNewPassword">Новый пароль (не менее 8 символов)</label>
+<input class="field" id="syncNewPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Придумай пароль">
+<label for="syncNewPasswordConfirm">Повтори пароль</label>
+<input class="field" id="syncNewPasswordConfirm" type="password" autocomplete="new-password" minlength="8" placeholder="Повтори пароль">
+<button class="btn primary" id="syncSetPasswordBtn" style="width:100%;margin-top:12px" onclick="setSyncPassword()">Сохранить пароль и завершить</button>
+</div>
+<div id="syncSignedInActions">
 <div class="toolbar" style="margin-top:10px"><button class="btn primary" onclick="syncNow()">Синхронизировать сейчас</button><button class="btn" onclick="signOutSync()">Отключить аккаунт</button></div>
+</div>
 </div>
 <div id="syncConflict" style="display:none;margin-top:12px;padding:12px;border:1px solid var(--gold);border-radius:13px">
 <strong>Обнаружены две разные версии данных</strong><p class="muted" style="font-size:12px">Чтобы ничего не потерять, выбери, какую версию оставить. Другую версию не буду перезаписывать автоматически.</p>
@@ -178,7 +379,7 @@ function addGoal(){if(!val('fTitle'))return toast('Укажи цель');db.goal
 function addSkill(){if(!val('fTitle'))return toast('Укажи навык');db.skills.push({id:id(),title:val('fTitle'),cat:val('fCat'),baseline:val('fBaseline'),xp:0});closeModal();if(save())toast('Навык добавлен')}
 function addHabit(){if(!val('fTitle'))return toast('Укажи привычку');db.habits.push({id:id(),title:val('fTitle'),freq:val('fFreq'),logs:[]});closeModal();if(save())toast('Привычка добавлена')}
 function addProject(){if(!val('fTitle'))return toast('Укажи проект');db.projects.push({id:id(),title:val('fTitle'),desc:val('fDesc'),goal:val('fLink'),done:false});closeModal();if(save())toast('Проект создан')}
-function addTransaction(){let n=Number(val('fAmount'));if(!n||n<=0)return toast('Укажи корректную сумму');db.transactions.unshift({id:id(),type:val('fType'),amount:n,title:val('fTitle')||'Без описания',date:today()});closeModal();if(save())toast('Запись сохранена')}
+function addTransaction(){let n=Number(val('fAmount'));if(!Number.isFinite(n)||n<=0||n>1000000000000)return toast('Укажи корректную сумму');db.transactions.unshift({id:id(),type:val('fType'),amount:n,title:val('fTitle')||'Без описания',date:today()});closeModal();if(save())toast('Запись сохранена')}
 function addProof(sid){let title=val('fTitle'),desc=val('fDesc'),v=Number(val('fValue')),unit=val('fUnit');if(!title||!desc||!unit||!Number.isFinite(v))return toast('Заполни результат и доказательство');let p={id:id(),skill:sid,title,desc,value:v,unit,direction:val('fDirection')||'higher',type:val('fType'),date:today(),status:'pending'};db.proofs.unshift(p);closeModal();if(save())toast('Доказательство ожидает подтверждения')}
 function approveProof(pid){let p=db.proofs.find(x=>x.id===pid);if(!p||p.status==='approved')return;let old=db.proofs.filter(x=>x.skill===p.skill&&x.status==='approved'&&x.title===p.title&&x.unit===p.unit&&(x.direction||'higher')===(p.direction||'higher'));let best=old.length?(p.direction==='lower'?Math.min(...old.map(x=>Number(x.value))):Math.max(...old.map(x=>Number(x.value)))):null;if(best!==null&&(p.direction==='lower'?Number(p.value)>=best:Number(p.value)<=best))return toast('Нужно улучшить прошлый результат');p.status='approved';p.xp=20;let s=db.skills.find(x=>x.id===p.skill);if(s)s.xp=(s.xp||0)+20;save();toast('Результат подтверждён · +20 XP навыку')}
 function toggleTask(tid){let t=db.tasks.find(x=>x.id===tid);if(!t)return;if(!t.done){t.done=true;if(!t.rewarded){t.rewarded=true;db.activityXP=(db.activityXP||0)+10}}else{t.done=false}updateStreak();save()}
@@ -221,15 +422,23 @@ function resetData(){if(confirm('Точно удалить все данные L
 const SUPABASE_URL='https://vlbheybdqnddaxykalth.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_YgaJxEM7IEkpZwhGFlBA2w_dX2oVMFb';
 const SYNC_META_KEY='level-life-sync-meta-v1';
-let supabaseClient=null,syncUser=null,syncTimer=null,syncBusy=false,syncConflictData=null;
+let supabaseClient=null,syncUser=null,syncTimer=null,syncBusy=false,syncQueued=false,syncConflictData=null,authSetupMode=new URLSearchParams(window.location.search).get('auth_setup')==='1';
 function readSyncMeta(){try{return JSON.parse(localStorage.getItem(SYNC_META_KEY)||'{}')}catch(_){return {}}}
 function writeSyncMeta(patch){localStorage.setItem(SYNC_META_KEY,JSON.stringify({...readSyncMeta(),...patch}))}
-function markLocalChange(){writeSyncMeta({localModifiedAt:new Date().toISOString()});scheduleCloudSync()}
+function markLocalChange(){const meta=readSyncMeta();writeSyncMeta({localModifiedAt:new Date().toISOString(),localRevision:(meta.localRevision||0)+1,dirty:true});scheduleCloudSync()}
 function setSyncStatus(message){const el=document.getElementById('syncStatus');if(el)el.textContent=message}
-function showSyncState(signedIn){const a=document.getElementById('syncSignedOut'),b=document.getElementById('syncSignedIn');if(a)a.style.display=signedIn?'none':'block';if(b)b.style.display=signedIn?'block':'none';const c=document.getElementById('syncAccountLabel');if(c&&syncUser)c.textContent=syncUser.email||'Аккаунт подключён'}
+function showSyncState(signedIn){
+ const a=document.getElementById('syncSignedOut'),b=document.getElementById('syncSignedIn');
+ if(a)a.style.display=signedIn?'none':'block';
+ if(b)b.style.display=signedIn?'block':'none';
+ const setup=document.getElementById('syncPasswordSetup'),actions=document.getElementById('syncSignedInActions');
+ if(setup)setup.style.display=signedIn&&authSetupMode?'block':'none';
+ if(actions)actions.style.display=signedIn&&authSetupMode?'none':'block';
+ const c=document.getElementById('syncAccountLabel');if(c&&syncUser)c.textContent=syncUser.email||'Аккаунт подключён';
+}
 function showSyncConflict(row){syncConflictData=row;const el=document.getElementById('syncConflict');if(el)el.style.display='block';setSyncStatus('Нужен выбор версии: локальная и облачная копии отличаются.')}
 function hideSyncConflict(){syncConflictData=null;const el=document.getElementById('syncConflict');if(el)el.style.display='none'}
-function scheduleCloudSync(){if(!syncUser||!supabaseClient)return;if(syncTimer)clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncNow(),1100)}
+function scheduleCloudSync(){if(!syncUser||!supabaseClient||authSetupMode)return;if(syncTimer)clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncNow(),900)}
 function normalizeCloudPayload(payload){
  const base=fresh(),x=payload&&typeof payload==='object'?payload:{};
  return {...base,...x,
@@ -245,21 +454,27 @@ async function readCloudSnapshot(){
  if(error)throw error;return data;
 }
 async function uploadLocalSnapshot(){
- const meta=readSyncMeta(),localModifiedAt=meta.localModifiedAt||new Date().toISOString();
- const {data,error}=await supabaseClient.from('level_snapshots').upsert({user_id:syncUser.id,payload:db,schema_version:1},{onConflict:'user_id'}).select('updated_at').single();
+ const metaAtStart=readSyncMeta(),localModifiedAt=metaAtStart.localModifiedAt||new Date().toISOString();
+ const localRevision=metaAtStart.localRevision||0,snapshot=JSON.parse(JSON.stringify(db));
+ const {data,error}=await supabaseClient.from('level_snapshots').upsert({user_id:syncUser.id,payload:snapshot,schema_version:1},{onConflict:'user_id'}).select('updated_at').single();
  if(error)throw error;
- writeSyncMeta({userId:syncUser.id,localModifiedAt,lastSyncedAt:data.updated_at,remoteUpdatedAt:data.updated_at});
- hideSyncConflict();setSyncStatus('Синхронизировано · '+new Date(data.updated_at).toLocaleString('ru-RU'));
+ const latestMeta=readSyncMeta(),changedDuringUpload=(latestMeta.localRevision||0)>localRevision;
+ writeSyncMeta({userId:syncUser.id,localModifiedAt:latestMeta.localModifiedAt||localModifiedAt,localRevision:latestMeta.localRevision||localRevision,syncedLocalRevision:localRevision,dirty:changedDuringUpload,lastSyncedAt:data.updated_at,remoteUpdatedAt:data.updated_at});
+ hideSyncConflict();
+ if(changedDuringUpload){setSyncStatus('Есть новые изменения. Отправляю их следом…');scheduleCloudSync()}
+ else setSyncStatus('Синхронизировано · '+new Date(data.updated_at).toLocaleString('ru-RU'));
 }
 function downloadCloudSnapshot(row){
  if(!row||!row.payload)throw new Error('В облаке нет корректного снимка LEVEL');
  db=normalizeCloudPayload(row.payload);localStorage.setItem(KEY,JSON.stringify(db));render();
- writeSyncMeta({userId:syncUser.id,localModifiedAt:row.updated_at,lastSyncedAt:row.updated_at,remoteUpdatedAt:row.updated_at});
+ const meta=readSyncMeta(),revision=meta.localRevision||0;
+ writeSyncMeta({userId:syncUser.id,localModifiedAt:row.updated_at,localRevision:revision,syncedLocalRevision:revision,dirty:false,lastSyncedAt:row.updated_at,remoteUpdatedAt:row.updated_at});
  hideSyncConflict();setSyncStatus('Загружена актуальная облачная версия · '+new Date(row.updated_at).toLocaleString('ru-RU'));
 }
 async function syncNow(){
  if(!syncUser||!supabaseClient)return;
- if(syncBusy)return;
+ if(syncBusy){syncQueued=true;return}
+ if(syncConflictData){setSyncStatus('Сначала выбери, какую версию данных оставить.');return}
  if(!navigator.onLine){setSyncStatus('Нет интернета. Данные сохранены на устройстве и отправятся позже.');return}
  syncBusy=true;
  try{
@@ -270,17 +485,24 @@ async function syncNow(){
   }else if(meta.userId!==syncUser.id||!meta.remoteUpdatedAt){
    if(!HAD_LOCAL_DATA_AT_BOOT)downloadCloudSnapshot(row);else showSyncConflict(row);
   }else{
-   const localChanged=!!meta.localModifiedAt&&Date.parse(meta.localModifiedAt)>Date.parse(meta.lastSyncedAt||0);
+   const localChanged=meta.dirty===true||(meta.localRevision||0)>(meta.syncedLocalRevision||0)||(!!meta.localModifiedAt&&Date.parse(meta.localModifiedAt)>Date.parse(meta.lastSyncedAt||0));
    const remoteChanged=row.updated_at!==meta.remoteUpdatedAt;
    if(localChanged&&remoteChanged)showSyncConflict(row);
-   else if(remoteChanged)downloadCloudSnapshot(row);
+   else if(remoteChanged){
+    const latestMeta=readSyncMeta();
+    if((latestMeta.localRevision||0)>(meta.localRevision||0))showSyncConflict(row);
+    else downloadCloudSnapshot(row);
+   }
    else if(localChanged)await uploadLocalSnapshot();
    else setSyncStatus('Всё синхронизировано · '+new Date(row.updated_at).toLocaleString('ru-RU'));
   }
  }catch(error){
   console.error('LEVEL cloud sync failed',error);
   setSyncStatus('Ошибка синхронизации: '+(error.message||'проверь подключение и настройки Supabase'));
- }finally{syncBusy=false}
+ }finally{
+  syncBusy=false;
+  if(syncQueued){syncQueued=false;scheduleCloudSync()}
+ }
 }
 async function resolveSyncConflict(choice){
  if(!syncConflictData)return;
@@ -293,42 +515,55 @@ async function sendSyncLink(){
  if(!email||!email.includes('@')){toast('Укажи корректный email');return}
  const button=document.getElementById('syncLinkBtn');if(button){button.disabled=true;button.textContent='Отправляю…'}
  try{
-  const {error}=await supabaseClient.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:window.location.origin+window.location.pathname}});
+  const redirectUrl=new URL(window.location.href);redirectUrl.searchParams.set('auth_setup','1');
+  const {error}=await supabaseClient.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:redirectUrl.toString()}});
   if(error)throw error;
   const box=document.getElementById('syncLinkBox');if(box)box.style.display='block';
-  setSyncStatus('Письмо отправлено на '+email+'. Скопируй ссылку из письма и вставь её в LEVEL.');
+  setSyncStatus('Письмо отправлено на '+email+'. Открой ссылку один раз: LEVEL предложит создать пароль.');
  }catch(error){
   console.error('LEVEL magic link request failed',error);
-  setSyncStatus('Не удалось отправить ссылку: '+(error.message||'проверь email и настройки Supabase'));
- }finally{if(button){button.disabled=false;button.textContent='Отправить ссылку повторно'}}
+  setSyncStatus('Не удалось отправить письмо: '+(error.message||'проверь email и подожди перед повторным запросом'));
+ }finally{if(button){button.disabled=false;button.textContent='Первое подключение / восстановить пароль'}}
 }
-async function verifySyncLink(){
+async function signInSync(){
  if(!supabaseClient){setSyncStatus('Библиотека Supabase не загружена.');return}
- const raw=document.getElementById('syncMagicLink')?.value?.trim()||'';
- if(!raw){toast('Сначала вставь ссылку из письма');return}
- let tokenHash='',type='email';
+ const email=document.getElementById('syncEmail')?.value?.trim(),password=document.getElementById('syncPassword')?.value||'';
+ if(!email||!email.includes('@'))return toast('Укажи корректный email');
+ if(!password)return toast('Введи пароль');
+ const button=document.getElementById('syncPasswordBtn');if(button){button.disabled=true;button.textContent='Вхожу…'}
  try{
-  if(/^https?:\/\//i.test(raw)){
-   const url=new URL(raw);
-   tokenHash=url.searchParams.get('token_hash')||url.searchParams.get('token')||'';
-   type=url.searchParams.get('type')||'email';
-  }else{
-   tokenHash=raw;
-  }
- }catch(_){toast('Не удалось прочитать ссылку. Скопируй её целиком из письма.');return}
- if(!tokenHash){toast('В ссылке не найден ключ подтверждения. Скопируй ссылку целиком.');return}
- const button=document.getElementById('syncVerifyBtn');if(button){button.disabled=true;button.textContent='Проверяю…'}
- try{
-  const {data,error}=await supabaseClient.auth.verifyOtp({token_hash:tokenHash,type});
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
   if(error)throw error;
-  if(!data.session?.user)throw new Error('Подтверждение прошло, но сессия не создана. Запроси новую ссылку.');
-  const input=document.getElementById('syncMagicLink');if(input)input.value='';
-  setSyncStatus('Вход подтверждён. Подключаю облачную синхронизацию…');
-  await initSyncForUser(data.session.user);
+  if(!data.user)throw new Error('Supabase не вернул пользователя');
+  setSyncStatus('Вход выполнен. Проверяю облачные данные…');
+  await initSyncForUser(data.user);
  }catch(error){
-  console.error('LEVEL magic link verification failed',error);
-  setSyncStatus('Не удалось подтвердить ссылку: '+(error.message||'ссылка могла истечь или уже использоваться. Запроси новую.'));
- }finally{if(button){button.disabled=false;button.textContent='Подтвердить ссылку и подключить'}}
+  console.error('LEVEL password sign-in failed',error);
+  setSyncStatus('Не удалось войти: '+(error.message||'проверь email и пароль'));
+ }finally{if(button){button.disabled=false;button.textContent='Войти и синхронизировать'}}
+}
+async function setSyncPassword(){
+ if(!supabaseClient||!syncUser)return setSyncStatus('Сначала открой свежую ссылку из письма.');
+ const password=document.getElementById('syncNewPassword')?.value||'',confirmPassword=document.getElementById('syncNewPasswordConfirm')?.value||'';
+ if(password.length<8)return toast('Пароль должен содержать не менее 8 символов');
+ if(password!==confirmPassword)return toast('Пароли не совпадают');
+ const button=document.getElementById('syncSetPasswordBtn');if(button){button.disabled=true;button.textContent='Сохраняю…'}
+ try{
+  const {error}=await supabaseClient.auth.updateUser({password});
+  if(error)throw error;
+  authSetupMode=false;
+  const cleanUrl=new URL(window.location.href);cleanUrl.searchParams.delete('auth_setup');
+  window.history.replaceState({},document.title,cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
+  const {error:signOutError}=await supabaseClient.auth.signOut();
+  syncUser=null;showSyncState(false);
+  setSyncStatus(signOutError
+   ?'Пароль создан. Теперь вернись в установленное приложение и войди по email и паролю. Если Safari остался авторизован, выйди из него отдельно.'
+   :'Пароль создан. Вернись в установленное приложение LEVEL и войди по email и паролю. Данные из Safari не синхронизировались.');
+  const email=document.getElementById('syncEmail');if(email&&syncUser?.email)email.value=syncUser.email;
+ }catch(error){
+  console.error('LEVEL password setup failed',error);
+  setSyncStatus('Не удалось сохранить пароль: '+(error.message||'попробуй ещё раз'));
+ }finally{if(button){button.disabled=false;button.textContent='Сохранить пароль и завершить'}}
 }
 async function signOutSync(){
  if(!supabaseClient)return;
@@ -338,8 +573,12 @@ async function signOutSync(){
 }
 async function initSyncForUser(user){
  if(!user||!supabaseClient)return;
- if(syncUser?.id===user.id&&syncBusy)return;
  syncUser=user;showSyncState(true);
+ if(authSetupMode){
+  setSyncStatus('Email подтверждён. Создай пароль ниже. Облачная синхронизация пока не запускается, поэтому локальные данные не будут перезаписаны.');
+  return;
+ }
+ if(syncBusy)return;
  try{await syncNow()}catch(error){console.error(error);setSyncStatus('Ошибка подключения: '+(error.message||'неизвестная ошибка'))}
 }
 function initCloudSync(){
