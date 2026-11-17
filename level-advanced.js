@@ -88,7 +88,7 @@ async function deleteLocalEvidenceFile(fileId){try{const dbx=await openEvidenceD
 function deleteAdvancedRecord(key,rid){if(!confirm('Удалить эту запись?'))return;const old=arr(key).find(x=>x.id===rid);if(key==='evidence'&&old?.fileId)deleteLocalEvidenceFile(old.fileId);db[key]=arr(key).filter(x=>x.id!==rid);save()}
 function renderAdvisor(){
  const el=$('axAdvisor');if(!el)return;
- const active=db.projects.filter(p=>!p.done),overdue=db.tasks.filter(t=>!t.done&&!t.replaced&&t.date<today()),recent=db.tasks.filter(t=>t.done&&t.date>=daysAgo(7)),proofs=db.proofs.filter(p=>p.status==='approved'),weak=db.skills.filter(s=>!proofs.some(p=>p.skill===s.id)),ideas=db.opportunities.filter(o=>o.status==='new').sort((a,b)=>b.score-a.score);
+ const active=db.projects.filter(p=>!p.done),overdue=db.tasks.filter(t=>!t.done&&!t.replaced&&t.date<today()),recent=db.tasks.filter(t=>t.done&&t.date>=daysAgo(7)),proofs=db.proofs.filter(p=>p.status==='approved'),weak=db.skills.filter(s=>!proofs.some(p=>p.skill===s.id)),staleSkills=db.skills.filter(s=>{const latest=proofs.filter(p=>p.skill===s.id).map(p=>p.date).sort().pop();return latest&&latest<daysAgo(30)}),ideas=db.opportunities.filter(o=>o.status==='new').sort((a,b)=>b.score-a.score);
  const suggestions=[];
  if(overdue.length)suggestions.push('Разобрать '+overdue.length+' просроченных квестов: перенести, заменить с обоснованием или удалить устаревшие.');
  const stalled=active.filter(p=>!p.nextStep);if(stalled.length)suggestions.push('У проекта «'+stalled[0].title+'» не задан следующий шаг. Определи одно действие, которое можно выполнить за 30–60 минут.');
