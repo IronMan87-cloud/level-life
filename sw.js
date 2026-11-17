@@ -1,4 +1,4 @@
-const CACHE='level-shell-v23';
+const CACHE='level-shell-v24';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg'];
 
 self.addEventListener('install',event=>{
