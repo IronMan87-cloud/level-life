@@ -468,7 +468,7 @@ if(type==='meal')b='<label>Что ты ел?</label><input class="field" id="fMe
 if(type==='weight')b='<label>Текущий вес, кг</label><input class="field" id="fWeight" type="number" min="20" max="400" step="0.1" value="'+esc(String(db.health.weightKg||70))+'"><label>Заметка (необязательно)</label><input class="field" id="fWeightNote" placeholder="Например: утром, до завтрака"><button class="btn primary" onclick="addWeight()">Сохранить измерение</button>';
 if(type==='healthProfile')b='<label>Рост, см</label><input class="field" id="fHeight" type="number" min="100" max="250" step="1" value="'+esc(String(db.health.heightCm||185))+'"><label>Текущий вес, кг</label><input class="field" id="fProfileWeight" type="number" min="20" max="400" step="0.1" value="'+esc(String(db.health.weightKg||70))+'"><p class="muted" style="font-size:11px">Эти параметры используются только для расчёта ИМТ. Чтобы сохранить динамику, добавляй отдельные измерения веса.</p><button class="btn primary" onclick="saveHealthProfile()">Сохранить параметры</button>';
 if(type==='transaction')b='<label>Тип операции</label><select class="field" id="fType"><option value="in">Доход</option><option value="out">Расход</option></select><label>Сумма, ₽</label><input class="field" id="fAmount" type="number" min="1" placeholder="0"><label>Описание</label><input class="field" id="fTitle" placeholder="За что / на что"><button class="btn primary" onclick="addTransaction()">Сохранить</button>';
-if(type==='replaceTask'){let t=db.tasks.find(x=>x.id===ref);if(!t)return; b='<p class="sub">Исходный квест: '+esc(t.title)+'</p><div class="replace-note">Замена должна продвигать к той же цели и сохранять сопоставимые усилия. Если действие зависит от справки, ответа организации, решения другого человека или внешнего события, выбери категорию «Документы / справки / действия организаций» и опиши, что именно недоступно. XP не увеличивается из-за замены. Проверка оценивает логику описания, но не подтверждает внешние обстоятельства.</div><label>Почему не можешь выполнить исходное задание?</label><select class="field" id="replaceReasonType"><option value="weather">Погода / условия на улице</option><option value="health">Самочувствие / здоровье</option><option value="safety">Безопасность / доступность места</option><option value="time">Непредвиденное ограничение по времени</option><option value="documents">Документы / справки / действия организаций</option><option value="other">Другая объективная причина</option></select><label>Опиши конкретную причину</label><textarea class="field" id="replaceReason" rows="3" placeholder="Например: сильный дождь, порывы ветра и скользкие дорожки — бегать небезопасно."></textarea><label>На что предлагаешь заменить?</label><textarea class="field" id="replaceAlternative" rows="3" placeholder="Например: 20 минут домашней кардиотренировки без прыжков."></textarea><button class="btn primary" onclick="reviewTaskReplacement(\''+t.id+'\')">Проверить и отправить замену</button>'}
+if(type==='replaceTask'){let t=db.tasks.find(x=>x.id===ref);if(!t)return; b='<p class="sub">Исходный квест: '+esc(t.title)+'</p><div class="replace-note">Языковые правила больше не решают, уважительная ли причина и равноценна ли замена. Заявка будет отправлена в ChatGPT через меню «Поделиться» на iPhone. После ответа вернись сюда и сам подтверди или отклони замену. До подтверждения исходный квест не меняется, XP не начисляется.</div><label>Почему не можешь выполнить исходное задание?</label><select class="field" id="replaceReasonType"><option value="weather">Погода / условия на улице</option><option value="health">Самочувствие / здоровье</option><option value="safety">Безопасность / доступность места</option><option value="time">Непредвиденное ограничение по времени</option><option value="documents">Документы / справки / действия организаций</option><option value="other">Другая объективная причина</option></select><label>Опиши конкретную причину</label><textarea class="field" id="replaceReason" rows="3" placeholder="Что произошло и почему это мешает выполнить квест?"></textarea><label>На что предлагаешь заменить?</label><textarea class="field" id="replaceAlternative" rows="3" placeholder="Конкретное действие, которое продвигает к той же цели."></textarea><button class="btn primary" onclick="reviewTaskReplacement(\''+t.id+'\')">Отправить заявку в ChatGPT</button><div id="replacementDecision" class="replace-note" style="display:none"></div>'}
 if(type==='proof'){let s=db.skills.find(x=>x.id===ref);let prev=db.proofs.filter(p=>p.skill===ref&&p.status==='approved').sort((a,b)=>(a.direction==='lower'?Number(a.value)-Number(b.value):Number(b.value)-Number(a.value)))[0];b='<p class="sub">Навык: '+esc(s?.title||'')+'</p><p class="muted" style="font-size:11px">Текущий лучший результат: '+(prev?esc(prev.value+' '+prev.unit):esc(s?.baseline||'не задан'))+'. Новый результат должен быть измеримым и лучше предыдущего.</p><label>Что именно проверяем?</label><input class="field" id="fTitle" placeholder="Например, дистанция бега"><div class="formgrid"><div><label>Числовой результат</label><input class="field" id="fValue" type="number" step="any" placeholder="Например, 3"></div><div><label>Единица измерения</label><input class="field" id="fUnit" placeholder="км, минуты, сделки..."></div></div><label>Что считается улучшением?</label><select class="field" id="fDirection"><option value="higher">Больше — лучше</option><option value="lower">Меньше — лучше</option></select><label>Тип доказательства</label><select class="field" id="fType"><option>Измерение</option><option>Тест</option><option>Документ</option><option>Фото / видео</option><option>Результат проекта</option></select><label>Доказательство: ссылка или подробное описание</label><textarea class="field" id="fDesc" placeholder="Где посмотреть результат? Какие условия теста?"></textarea><p class="muted" style="font-size:11px">Запись сначала ожидает твоего подтверждения. LEVEL не проверяет подлинность приложенных доказательств автоматически. Подтверждай только реальный результат. Для сравнения повторных испытаний используй одну и ту же метрику и единицу.</p><button class="btn primary" onclick="addProof(\''+ref+'\')">Отправить на подтверждение</button>'}
 modal(({replaceTask:'Проверка замены квеста',task:'Новый квест',goal:'Новая долгосрочная цель',skill:'Новый навык',habit:'Новая привычка',project:'Новый проект',transaction:'Финансовая операция',proof:'Proof of Skill',meal:'Новый приём пищи',weight:'Новое измерение веса',healthProfile:'Параметры здоровья'})[type],b);
 }
@@ -498,30 +498,64 @@ function addTransaction(){let n=Number(val('fAmount'));if(!Number.isFinite(n)||n
 function addProof(sid){let title=val('fTitle'),desc=val('fDesc'),v=Number(val('fValue')),unit=val('fUnit');if(!title||!desc||!unit||!Number.isFinite(v))return toast('Заполни результат и доказательство');let p={id:id(),skill:sid,title,desc,value:v,unit,direction:val('fDirection')||'higher',type:val('fType'),date:today(),status:'pending'};db.proofs.unshift(p);closeModal();if(save())toast('Доказательство ожидает подтверждения')}
 function approveProof(pid){let p=db.proofs.find(x=>x.id===pid);if(!p||p.status==='approved')return;let old=db.proofs.filter(x=>x.skill===p.skill&&x.status==='approved'&&x.title===p.title&&x.unit===p.unit&&(x.direction||'higher')===(p.direction||'higher'));let best=old.length?(p.direction==='lower'?Math.min(...old.map(x=>Number(x.value))):Math.max(...old.map(x=>Number(x.value)))):null;if(best!==null&&(p.direction==='lower'?Number(p.value)>=best:Number(p.value)<=best))return toast('Нужно улучшить прошлый результат');p.status='approved';p.xp=20;let s=db.skills.find(x=>x.id===p.skill);if(s)s.xp=(s.xp||0)+20;save();toast('Результат подтверждён · +20 XP навыку')}
 function requestTaskReplacement(tid){const t=db.tasks.find(x=>x.id===tid);if(!t||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Этот квест уже нельзя заменить');openModal('replaceTask',tid)}
-function reviewTaskReplacement(tid){
+async function reviewTaskReplacement(tid){
  const t=db.tasks.find(x=>x.id===tid);if(!t||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Квест уже выполнен или заменён');
  const type=document.getElementById('replaceReasonType')?.value||'other',reason=val('replaceReason'),alternative=val('replaceAlternative');
- if(reason.length<20)return toast('Опиши конкретное препятствие — минимум 20 символов. Например: «Организация не выдала обязательную справку, без неё возврат оформить нельзя».');
- if(alternative.length<15)return toast('Предложи конкретную равноценную альтернативу');
- const r=reason.toLocaleLowerCase('ru'),task=(t.title||'').toLocaleLowerCase('ru');
- const rules={
-  weather:{reason:['дожд','лив','гроза','гроз','шторм','ветер','голол','гололед','снег','метел','мороз','жар','жара','температур','смог','качество воздуха','скольз','обледен'],task:['бег','пробеж','улиц','на улице','велосипед','велопрогул','прогул','парк','улич','открытом воздухе']},
-  health:{reason:['температур','болит','боль','травм','растяж','плохое самочувствие','головокруж','тошнот','слабость','врач','болею','заболел'],task:[]},
-  safety:{reason:['закрыт','перекрыт','опасно','небезопас','нет доступа','не работает','авар','отмен','не могу добраться','риск'],task:[]},
-  time:{reason:['срочн','встреч','работ','задерж','непредвид','дедлайн','обязательн','перенос','опоздан'],task:[]},
-  documents:{reason:['справк','документ','бумаг','не выдал','не выдали','не предостав','отказ','отказал','отказали','не получил','не получила','ожидаю','задерж','организац','учрежден','ведомств','работодатель','банк','суд','полици','госуслуг','третьего лица','другого человека','нет ответа','не ответили','не подтвержд'],task:[]},
-  other:{reason:['невозможно','отмен','закрыт','сломал','не работает','непредвид','объектив','недоступ','не дали','не выдали','отказ','не получил','не получила','нет возможности','не зависит от меня','не могу получить'],task:[]}
- };
- const rule=rules[type],matched=rule.reason.some(k=>r.includes(k));
- if(!matched)return toast(type==='documents'?'Не вижу в объяснении проблемы с документом или внешним решением. Укажи, что именно не выдали, кто должен это предоставить и что произошло.':'Проверка не пройдена: опиши конкретное препятствие, а не только факт, что задание неудобно выполнить.');
- if(type==='weather'&&!rule.task.some(k=>task.includes(k)))return toast('Погода не объясняет это задание: выбери подходящую причину или уточни, почему условия мешают именно этому квесту.');
- if(alternative.toLocaleLowerCase('ru')===task)return toast('Замена должна отличаться от исходного задания.');
- if(alternative.length<25)return toast('Укажи конкретное следующее действие и ожидаемый результат. Замена должна продвигать к исходной цели, а не просто отменять её.');
+ if(reason.trim().length<8)return toast('Коротко опиши, что именно произошло.');
+ if(alternative.trim().length<8)return toast('Предложи конкретную альтернативу.');
  const skill=db.skills.find(s=>s.id===t.skillId);
- if(t.skillId&&!skill)return toast('Не найден исходный навык. Замена отменена.');
- t.replaced=true;t.replacementReason=reason;t.replacementReasonType=type;t.replacementReviewedAt=new Date().toISOString();
- const alt={...t,id:id(),title:alternative,date:t.date,time:t.time,done:false,rewarded:false,replaced:false,replacementOf:t.id,replacementApproved:true,replacementReason:reason,proof:'Выполни альтернативное задание и зафиксируй конкретный результат.'};
- db.tasks.push(alt);closeModal();if(save())toast('Проверка пройдена · задание заменено без изменения XP');
+ const goal=db.goals.find(g=>g.id===t.goalId);
+ const prompt=[
+  'Проверь замену квеста в моей RPG-системе LEVEL. Ты принимаешь решение как внимательный наставник, а не по ключевым словам.',
+  'Оцени отдельно: 1) действительно ли указанное обстоятельство мешает исходному заданию; 2) сохраняет ли альтернатива связь с той же целью и навыком; 3) сопоставимы ли усилия и сложность; 4) не позволяет ли замена просто избежать неприятной, но выполнимой работы.',
+  'Не требуй невозможных доказательств для очевидных бытовых обстоятельств. Если данных мало — задай один конкретный уточняющий вопрос. Не выдумывай факты. Не одобряй замену, которая лишь отменяет результат или подменяет его несвязанным занятием.',
+  'Ответь в начале одним из статусов: ОДОБРИТЬ, ОТКЛОНИТЬ или НУЖНО УТОЧНЕНИЕ. Затем кратко объясни причину. Если отклоняешь, предложи более подходящую альтернативу.',
+  '',
+  'ИСХОДНЫЙ КВЕСТ: '+t.title,
+  'НАВЫК: '+(skill?.title||'не указан'),
+  'СВЯЗАННАЯ ЦЕЛЬ: '+(goal?.title||'не указана'),
+  'СЛОЖНОСТЬ: '+(t.difficulty||'не указана'),
+  'ДЛИТЕЛЬНОСТЬ: '+(t.duration||'не указана'),
+  'КРИТЕРИЙ РЕЗУЛЬТАТА: '+(t.proof||'не указан'),
+  'КАТЕГОРИЯ ПРИЧИНЫ: '+type,
+  'ПРИЧИНА: '+reason,
+  'ПРЕДЛОЖЕННАЯ ЗАМЕНА: '+alternative,
+  '',
+  'Важно: не меняй данные в приложении и не начисляй XP. Это только проверка заявки.'
+ ].join('\n');
+ let shared=false, copied=false;
+ if(typeof navigator!=='undefined'&&typeof navigator.share==='function'){
+  try{await navigator.share({title:'Проверка замены квеста LEVEL',text:prompt});shared=true;}
+  catch(error){if(error?.name==='AbortError')return toast('Отправка отменена');}
+ }
+ if(!shared){
+  try{
+   if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(prompt);copied=true;}
+   else{
+    const area=document.createElement('textarea');area.value=prompt;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();copied=document.execCommand('copy');area.remove();
+   }
+  }catch(error){copied=false;}
+ }
+ if(!shared&&!copied)return toast('Не удалось открыть меню отправки или скопировать заявку. Попробуй ещё раз.');
+ t.replacementPending={type,reason,alternative,prompt,requestedAt:new Date().toISOString()};
+ if(!save())return;
+ const decision=document.getElementById('replacementDecision');
+ if(decision){
+  decision.style.display='block';
+  decision.innerHTML='<strong>Заявка подготовлена.</strong><p>Открой ChatGPT через меню «Поделиться» и дождись решения. Вернись сюда только после ответа.</p><button class="btn primary" onclick="approveTaskReplacement(\''+t.id+'\')">ChatGPT одобрил — применить замену</button> <button class="btn" onclick="rejectTaskReplacement(\''+t.id+'\')">Отклонить / оставить исходный квест</button>';
+ }
+ toast(shared?'Выбери ChatGPT в меню «Поделиться»':'Заявка скопирована — вставь её в ChatGPT');
+}
+function approveTaskReplacement(tid){
+ const t=db.tasks.find(x=>x.id===tid),p=t?.replacementPending;
+ if(!t||!p||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Нет ожидающей заявки на замену.');
+ t.replaced=true;t.replacementReason=p.reason;t.replacementReasonType=p.type;t.replacementReviewedAt=new Date().toISOString();t.replacementApprovedBy='user-after-chatgpt-review';
+ const alt={...t,id:id(),title:p.alternative,date:t.date,time:t.time,done:false,rewarded:false,replaced:false,replacementOf:t.id,replacementApproved:true,replacementReason:p.reason,proof:t.proof||'Выполни альтернативное задание и зафиксируй конкретный результат.'};
+ delete alt.replacementPending;db.tasks.push(alt);delete t.replacementPending;closeModal();if(save())toast('Замена применена · XP не начислялся');
+}
+function rejectTaskReplacement(tid){
+ const t=db.tasks.find(x=>x.id===tid);if(!t?.replacementPending)return toast('Нет ожидающей заявки.');
+ delete t.replacementPending;t.replacementRejectedAt=new Date().toISOString();save();closeModal();toast('Исходный квест сохранён без изменений');
 }
 function toggleTask(tid){let t=db.tasks.find(x=>x.id===tid);if(!t)return;if(!t.done){if(t.boss){let evidence=prompt('Подтверди результат босса: что именно сделал и какой получен результат?');if(!evidence||evidence.trim().length<20){toast('Для босса нужно конкретное подтверждение (от 20 символов)');return}t.bossEvidence=evidence.trim();t.bossVerifiedAt=new Date().toISOString();let boss=db.weeklyBoss;if(boss&&boss.id===t.bossId){boss.done=true;boss.evidence=evidence.trim()}}const oldLevel=Math.floor((Number(db.activityXP)||0)/100)+1;const previousAchievements=new Set((db.achievements||[]).map(a=>a.key));t.done=true;if(t.milestoneId){let g=db.goals.find(x=>x.id===t.goal),m=g?.milestones?.find(x=>x.id===t.milestoneId);if(m&&!m.done){m.done=true;g.progress=Math.round(g.milestones.filter(x=>x.done).length/g.milestones.length*100)}}if(!t.rewarded){t.rewarded=true;db.activityXP=(db.activityXP||0)+10+(t.boss?30:0);if(t.skillId&&t.skillXp){let skill=db.skills.find(x=>x.id===t.skillId);if(skill)skill.xp=(skill.xp||0)+Number(t.skillXp)}}const newLevel=Math.floor((Number(db.activityXP)||0)/100)+1;updateStreak();refreshAchievements();const newly=(db.achievements||[]).filter(a=>!previousAchievements.has(a.key));if(save()){showRewardPopup({kind:'quest',title:t.title,detail:'Квест завершён',xp:t.rewarded?(10+(t.boss?30:0)):0});if(newLevel>oldLevel)showRewardPopup({kind:'levelup',title:'Уровень повышен!',detail:'Ты достиг нового уровня. Продолжай превращать усилия в реальные результаты.',level:newLevel,xp:Number(db.activityXP)||0});newly.forEach((a,i)=>setTimeout(()=>showRewardPopup({kind:'achievement',title:a.title,detail:a.desc,xp:0}),650+(i*450)))}}else{if(t.boss)return toast('Завершённого босса нельзя отменить: сохрани подтверждённый результат.');t.done=false;save()}}
 function updateStreak(){let d=today();if(db.pauseDates.includes(d))return;let completed=db.tasks.some(t=>t.date===d&&t.done)||db.habits.some(h=>h.logs.includes(d));if(completed&&db.lastActive!==d){let y=new Date();y.setDate(y.getDate()-1);let yd=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');while(db.pauseDates.includes(yd)){y.setDate(y.getDate()-1);yd=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0')}db.streak=db.lastActive===yd?(db.streak||0)+1:1;db.lastActive=d}}
