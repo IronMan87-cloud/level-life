@@ -141,11 +141,13 @@ function renderResultsCenter(){
  db.projects.filter(p=>p.done).forEach(p=>add(p.completedAt||p.createdAt,'Проекты',p.title,p.desc||'Все этапы проекта завершены','Проект'));
  db.transactions.forEach(t=>add(t.date,'Финансы',(t.type==='in'?'Доход: ':'Расход: ')+(t.title||'Операция'),money(t.amount)+(t.note?' · '+t.note:''),'Внесено вручную'));
  arr('personalRecords').forEach(r=>add(r.date,'Показатели',r.title,Number(r.value)+' '+(r.unit||'')+(r.note?' · '+r.note:''),'Личный показатель',r.evidenceUrl));
+ (db.health?.weightLogs||[]).forEach(w=>add(w.date,'Показатели','Измерение веса',Number(w.weightKg)+' кг'+(w.note?' · '+w.note:''),'Измерение здоровья'));
+ if(!(db.health?.weightLogs||[]).length&&Number(db.health?.weightKg)>0)add('','Показатели','Текущий вес',Number(db.health.weightKg)+' кг','Текущее значение · без истории');
  db.goals.forEach(g=>(g.milestones||[]).filter(m=>m.done).forEach(m=>add(m.completedAt||g.updatedAt||g.date,'Жизненные вехи',m.title,'Этап цели: '+g.title,'Этап цели')));
  arr('lifeMilestones').filter(m=>m.status==='done').forEach(m=>add(m.completedAt||m.date||m.createdAt,'Жизненные вехи',m.title,m.note||'Жизненная веха отмечена как достигнутая','Запись пользователя'));
  arr('decisions').filter(d=>d.status==='reviewed').forEach(d=>add(d.reviewedAt||d.createdAt,'Решения',d.title,(d.actual?'Факт: '+d.actual+' · ':'')+(d.lesson?'Вывод: '+d.lesson:''),'Разбор решения'));
  const income=db.transactions.filter(t=>t.type==='in').reduce((n,t)=>n+(Number(t.amount)||0),0);
- $('resultIncome').textContent=money(income);$('resultProjects').textContent=db.projects.filter(p=>p.done).length;$('resultProofs').textContent=proofs.length;$('resultRecords').textContent=arr('personalRecords').length;
+ $('resultIncome').textContent=money(income);$('resultProjects').textContent=db.projects.filter(p=>p.done).length;$('resultProofs').textContent=proofs.length;$('resultRecords').textContent=arr('personalRecords').length+(db.health?.weightLogs||[]).length;
  events.sort((a,b)=>b.date.localeCompare(a.date));
  const filter=$('resultFilter')?.value||'all',query=norm($('resultSearch')?.value||'');
  const filtered=events.filter(e=>(filter==='all'||e.kind===filter)&&(!query||norm([e.title,e.detail,e.kind,e.source].join(' ')).includes(query)));
