@@ -349,7 +349,7 @@ function modal(title,body){document.getElementById('modalTitle').textContent=tit
 function closeModal(){document.getElementById('modalBack').classList.remove('show')}
 function openModal(type,ref){
 let b='';
-if(type==='task')b='<label>Название квеста</label><input class="field" id="fTitle" placeholder="Конкретный следующий шаг"><div class="formgrid"><div><label>Дата</label><input class="field" id="fDate" type="date" value="'+today()+'"></div><div><label>Время (если важно)</label><input class="field" id="fTime" type="time"></div></div><div><label>Приоритет</label><select class="field" id="fPriority"><option>Обычный</option><option>Высокий</option><option>Главный результат</option></select></div></div><label>Связать с целью</label><select class="field" id="fLink"><option value="">Без цели</option>'+db.goals.map(g=>'<option value="'+g.id+'">'+esc(g.title)+'</option>').join('')+'</select><button class="btn primary" onclick="addTask()">Добавить квест</button>';
+if(type==='task')b='<label>Название квеста</label><input class="field" id="fTitle" placeholder="Конкретный следующий шаг"><div class="formgrid"><div><label>Дата</label><input class="field" id="fDate" type="date" value="'+today()+'"></div><div><label>Время (если важно)</label><input class="field" id="fTime" type="time"></div></div><div><label>Приоритет</label><select class="field" id="fPriority"><option>Обычный</option><option>Высокий</option><option>Главный результат</option></select></div><label>Связать с целью</label><select class="field" id="fLink"><option value="">Без цели</option>'+db.goals.map(g=>'<option value="'+g.id+'">'+esc(g.title)+'</option>').join('')+'</select><button class="btn primary" onclick="addTask()">Добавить квест</button>';
 if(type==='goal')b='<label>Название цели</label><input class="field" id="fTitle" placeholder="Что хочешь изменить?"><label>Почему это важно?</label><textarea class="field" id="fDesc" placeholder="Ожидаемый результат"></textarea><label>Желаемый срок</label><input class="field" id="fDate" type="date"><label>Этапы (каждый с новой строки)</label><textarea class="field" id="fMilestones" placeholder="Первый этап&#10;Второй этап&#10;Финальный результат"></textarea><button class="btn primary" onclick="addGoal()">Создать цель</button>';
 if(type==='skill')b='<label>Название навыка</label><input class="field" id="fTitle" placeholder="Например, переговоры"><label>Категория</label><select class="field" id="fCat"><option>Карьера</option><option>Финансы</option><option>Физическая форма</option><option>Интеллект</option><option>Коммуникация</option><option>Технологии</option><option>Творчество</option><option>Другое</option></select><label>Стартовый измеримый показатель (необязательно)</label><input class="field" id="fBaseline" placeholder="Например: 4 успешные сделки из 10"><button class="btn primary" onclick="addSkill()">Добавить навык</button>';
 if(type==='habit')b='<label>Название привычки</label><input class="field" id="fTitle" placeholder="Например, 30 минут обучения"><label>Частота</label><select class="field" id="fFreq"><option value="daily">Каждый день</option><option value="weekdays">Будни</option></select><button class="btn primary" onclick="addHabit()">Создать привычку</button>';
@@ -416,8 +416,53 @@ function deleteTransaction(tid){if(confirm('Удалить эту финансо
 function deleteMeal(mid){if(confirm('Удалить эту запись о питании?')){db.health.meals=db.health.meals.filter(m=>m.id!==mid);save()}}
 function deleteWeight(wid){const logs=db.health.weightLogs||[],index=logs.findIndex(w=>w.id===wid);if(index<0)return;if(confirm('Удалить это измерение?')){const removed=logs[index];db.health.weightLogs=logs.filter(w=>w.id!==wid);if(index===0&&Number(db.health.weightKg)===Number(removed.weightKg)&&db.health.weightLogs.length)db.health.weightKg=Number(db.health.weightLogs[0].weightKg);save()}}
 function exportData(){let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='level-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href);toast('Резервная копия создана')}
-function importData(e){let f=e.target.files&&e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x||typeof x!=='object'||!Array.isArray(x.tasks)||!Array.isArray(x.goals))throw new Error('invalid backup');db={...fresh(),...x,tasks:x.tasks||[],goals:x.goals||[],skills:x.skills||[],projects:x.projects||[],transactions:x.transactions||[],proofs:x.proofs||[],habits:x.habits||[],pauseDates:x.pauseDates||[],health:{heightCm:185,weightKg:70,meals:[],weightLogs:[],...(x.health||{})}};if(!Array.isArray(db.health.meals))db.health.meals=[];if(!Array.isArray(db.health.weightLogs))db.health.weightLogs=[];if(save())toast('Резервная копия восстановлена')}catch(err){console.error('LEVEL import failed',err);toast('Файл не похож на резервную копию LEVEL')}finally{e.target.value=''}};r.readAsText(f)}
-function resetData(){if(confirm('Точно удалить все данные LEVEL на этом устройстве?')){db=fresh();save();toast('Данные удалены')}}
+function safeImportedId(value){return typeof value==='string'&&/^[A-Za-z0-9_-]{1,80}$/.test(value)?value:id()}
+function normalizeImportedRecords(value){return Array.isArray(value)?value.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)).map(item=>({...item,id:safeImportedId(item.id)})):[]}
+function importData(e){
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const source=JSON.parse(reader.result);
+   if(!source||typeof source!=='object'||Array.isArray(source)||!Array.isArray(source.tasks)||!Array.isArray(source.goals))throw new Error('invalid backup');
+   const healthSource=source.health&&typeof source.health==='object'&&!Array.isArray(source.health)?source.health:{};
+   const importedGoals=normalizeImportedRecords(source.goals).map(goal=>({...goal,milestones:normalizeImportedRecords(goal.milestones)}));
+   const importedHabits=normalizeImportedRecords(source.habits).map(habit=>({...habit,logs:Array.isArray(habit.logs)?habit.logs.filter(x=>typeof x==='string'):[],xpDates:Array.isArray(habit.xpDates)?habit.xpDates.filter(x=>typeof x==='string'):[]}));
+   const importedHealth={heightCm:185,weightKg:70,meals:[],weightLogs:[],...healthSource};
+   importedHealth.meals=normalizeImportedRecords(healthSource.meals);
+   importedHealth.weightLogs=normalizeImportedRecords(healthSource.weightLogs);
+   const importedXP=Number(source.activityXP);
+   db={
+    ...fresh(),...source,
+    tasks:normalizeImportedRecords(source.tasks),
+    goals:importedGoals,
+    skills:normalizeImportedRecords(source.skills),
+    projects:normalizeImportedRecords(source.projects),
+    transactions:normalizeImportedRecords(source.transactions).filter(x=>Number.isFinite(Number(x.amount))&&Number(x.amount)>0),
+    proofs:normalizeImportedRecords(source.proofs).map(p=>({...p,status:p.status==='pending'?'pending':'approved',direction:p.direction==='lower'?'lower':'higher'})),
+    habits:importedHabits,
+    pauseDates:Array.isArray(source.pauseDates)?source.pauseDates.filter(x=>typeof x==='string'):[],
+    health:importedHealth,
+    activityXP:Number.isFinite(importedXP)&&importedXP>=0?importedXP:0,
+    starterApplied:true
+   };
+   if(!Number.isFinite(Number(db.health.heightCm))||db.health.heightCm<100||db.health.heightCm>250)db.health.heightCm=185;
+   if(!Number.isFinite(Number(db.health.weightKg))||db.health.weightKg<20||db.health.weightKg>400)db.health.weightKg=70;
+   if(!Number.isFinite(Number(db.streak))||db.streak<0)db.streak=0;
+   if(save())toast('Резервная копия восстановлена');
+  }catch(error){
+   console.error('LEVEL import failed',error);
+   toast('Не удалось импортировать: проверь файл резервной копии');
+  }finally{e.target.value=''}
+ };
+ reader.readAsText(file);
+}
+function resetData(){
+ if(!confirm('Удалить все данные LEVEL? Если облачная синхронизация подключена, пустая версия также будет отправлена в облако.'))return;
+ hideSyncConflict();
+ db=fresh();db.starterApplied=true;db.dailyTemplateDate=today();
+ if(save())toast('Данные удалены');
+}
 
 const SUPABASE_URL='https://vlbheybdqnddaxykalth.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_YgaJxEM7IEkpZwhGFlBA2w_dX2oVMFb';
@@ -593,6 +638,7 @@ function initCloudSync(){
  supabaseClient.auth.getSession().then(({data,error})=>{
   if(error){setSyncStatus('Не удалось проверить вход: '+error.message);return}
   if(data.session?.user)initSyncForUser(data.session.user);
+  else if(authSetupMode)setSyncStatus('Ссылка не подтвердилась. Возможно, она уже использована или истекла. Запроси новую ссылку и открой её один раз.');
   else setSyncStatus('Ожидает подключения. Данные пока хранятся локально.');
  });
  window.addEventListener('online',()=>{if(syncUser)syncNow()});
