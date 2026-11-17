@@ -500,7 +500,7 @@ function approveProof(pid){let p=db.proofs.find(x=>x.id===pid);if(!p||p.status==
 function showReplacementDecision(tid){
  const t=db.tasks.find(x=>x.id===tid),decision=document.getElementById('replacementDecision');if(!t?.replacementPending||!decision)return;
  decision.style.display='block';
- decision.innerHTML='<strong>Заявка подготовлена.</strong><p>Открой ChatGPT через меню «Поделиться» и дождись решения. Вернись сюда только после ответа.</p><button class="btn primary" onclick="approveTaskReplacement(\\''+t.id+'\\')">ChatGPT одобрил — применить замену</button> <button class="btn" onclick="rejectTaskReplacement(\\''+t.id+'\\')">Отклонить / оставить исходный квест</button>';
+ decision.innerHTML='<strong>Заявка подготовлена.</strong><p>Открой ChatGPT через меню «Поделиться» и дождись решения. Вернись сюда только после ответа.</p><button class="btn primary" onclick="approveTaskReplacement(\''+t.id+'\')">ChatGPT одобрил — применить замену</button> <button class="btn" onclick="rejectTaskReplacement(\''+t.id+'\')">Отклонить / оставить исходный квест</button>';
 }
 function requestTaskReplacement(tid){const t=db.tasks.find(x=>x.id===tid);if(!t||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Этот квест уже нельзя заменить');openModal('replaceTask',tid);showReplacementDecision(tid)}
 async function reviewTaskReplacement(tid){
