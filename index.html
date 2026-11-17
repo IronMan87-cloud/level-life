@@ -220,6 +220,8 @@ textarea.field{min-height:70px;resize:vertical}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+.advanced-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.strategy-panel{min-width:0}.strategy-panel .task{align-items:flex-start}.strategy-panel .proof{overflow-wrap:anywhere}.strategy-panel a{color:var(--accent)}#page-strategy .section{margin-top:28px}#page-strategy .cards{margin-bottom:4px}#page-strategy .progress{margin:8px 0}.task input[type=checkbox]{accent-color:var(--accent);margin-top:4px}@media(max-width:700px){.advanced-grid{grid-template-columns:1fr}}
 </style></head><body><div class="app">
 <header class="top"><div class="brand"><div class="mark">L</div>LEVEL</div><div class="date" id="today"></div><div class="profile"><div class="avatar">Я</div><span>Мой путь</span></div></header>
 <main>
@@ -248,7 +250,29 @@ textarea.field{min-height:70px;resize:vertical}
 <div class="panel"><h3>Активность за 7 дней</h3><div id="weeklyBars"></div></div>
 <div class="section"><h2>Реальные результаты</h2></div><div class="panel" id="realMetrics"></div>
 <div class="section"><h2>Характеристики персонажа</h2></div><div class="cards" id="attributeCards"></div>
-</section><section class="page" id="page-settings"><div class="section"><h2>Настройки и данные</h2></div><div class="panel"><h3>Синхронизация с ChatGPT</h3>
+</section><section class="page" id="page-strategy">
+<div class="section"><h2>Стратегия и развитие</h2><span class="tag">Реальные результаты</span></div>
+<p class="sub">Центр управления проектами, решениями, возможностями, навыками и долгосрочными результатами. Рекомендации основаны на сохранённых данных LEVEL.</p>
+<div class="section"><h2>LEVEL Advisor</h2></div><div class="panel" id="axAdvisor"></div>
+<div class="section"><h2>Центр проектов</h2><button class="btn primary" onclick="projectModal()">＋ Новый проект</button></div><div class="cards" id="axProjectCards"></div>
+<div class="section"><h2>Адаптивный планировщик</h2><button class="btn" onclick="timeLogModal()">＋ Замер времени</button></div><div class="panel" id="axPlanner"></div><div class="panel" id="axEfficiency" style="margin-top:12px"></div>
+<div class="section"><h2>Ранги подтверждённого мастерства</h2></div><div class="cards" id="axRanks"></div>
+<div class="section"><h2>Контрольные точки навыков</h2><button class="btn" onclick="checkpointModal()">＋ Испытание</button></div><div class="panel" id="axCheckpoints"></div>
+<div class="section"><h2>Архив доказательств</h2><button class="btn primary" onclick="evidenceModal()">＋ Добавить материал</button></div><div class="panel" id="axEvidence"></div>
+<div class="section"><h2>Журнал решений</h2><button class="btn" onclick="decisionModal()">＋ Решение</button></div><div class="panel" id="axDecisions"></div>
+<div class="section"><h2>Реестр возможностей</h2><button class="btn" onclick="opportunityModal()">＋ Возможность</button></div><div class="panel" id="axOpportunities"></div>
+<div class="section"><h2>База знаний</h2><button class="btn" onclick="knowledgeModal()">＋ Заметка</button></div><div class="panel" id="axKnowledge"></div>
+<div class="section"><h2>Связи навыков</h2><button class="btn" onclick="skillLinkModal()">＋ Связать</button></div><div class="panel" id="axSkillLinks"></div>
+<div class="section"><h2>Финансовая устойчивость</h2></div><div class="panel" id="axFinancial"></div>
+<div class="section"><h2>Индекс самостоятельности</h2></div><div class="panel" id="axIndependence"></div>
+<div class="section"><h2>Симулятор решений</h2><button class="btn" onclick="openSimulator()">Сравнить сценарии</button></div><div class="panel"><p class="sub">Сравни оптимистичный, базовый и осторожный сценарии до того, как принимать дорогостоящее решение.</p></div>
+<div class="section"><h2>Еженедельный разбор</h2></div><div class="panel" id="axWeeklyReviews"></div>
+<div class="section"><h2>Личные рекорды</h2><button class="btn" onclick="recordModal()">＋ Рекорд</button></div><div class="panel" id="axRecords"></div>
+<div class="section"><h2>История достижений и событий</h2></div><div class="panel" id="axTimeline"></div>
+<div class="section"><h2>Прогноз достижения целей</h2></div><div class="panel" id="axForecast"></div>
+<div class="section"><h2>Защита от накрутки</h2></div><div class="panel" id="axIntegrity"></div>
+</section>
+<section class="page" id="page-settings"><div class="section"><h2>Настройки и данные</h2></div><div class="panel"><h3>Синхронизация с ChatGPT</h3>
 <p class="sub">Подключи аккаунт один раз. LEVEL будет автоматически отправлять изменения в защищённую облачную базу, а ChatGPT сможет читать актуальные записи через подключённый Supabase.</p>
 <div id="syncStatus" class="healthnote" style="margin-top:12px">Пока не подключено. Данные остаются на этом устройстве.</div>
 <div id="syncSignedOut" style="margin-top:12px">
@@ -288,7 +312,7 @@ textarea.field{min-height:70px;resize:vertical}
 <p class="muted" style="font-size:11px">Резервную копию всё равно полезно периодически сохранять отдельно.</p>
 </div><div class="panel" style="margin-top:12px"><h3>Пауза / восстановление</h3><p class="sub">Если болезнь или объективные обстоятельства мешают выполнять план, включи паузу. Уже заработанный XP не уменьшается.</p><button class="btn" id="pauseBtn" onclick="togglePause()">Включить паузу на сегодня</button></div><div class="panel" style="margin-top:12px"><h3>Сброс</h3><p class="sub">Удалит все данные LEVEL на этом устройстве.</p><button class="btn danger" onclick="resetData()">Удалить мои данные</button></div><p class="muted" style="font-size:11px;margin-top:15px">LEVEL 3.1 · Personal Growth RPG</p></section>
 </main></div>
-<nav class="nav"><button class="active" data-page="home" onclick="showPage('home')"><span class="ico">⌂</span>Обзор</button><button data-page="quests" onclick="showPage('quests')"><span class="ico">☷</span>Квесты</button><button data-page="campaign" onclick="showPage('campaign')"><span class="ico">⚑</span>Кампания</button><button data-page="analytics" onclick="showPage('analytics')"><span class="ico">▥</span>Аналитика</button><button data-page="goals" onclick="showPage('goals')"><span class="ico">◎</span>Цели</button><button data-page="character" onclick="showPage('character')"><span class="ico">✳</span>Персонаж</button><button data-page="habits" onclick="showPage('habits')"><span class="ico">◷</span>Привычки</button><button data-page="projects" onclick="showPage('projects')"><span class="ico">◇</span>Проекты</button><button data-page="finance" onclick="showPage('finance')"><span class="ico">₽</span>Финансы</button><button data-page="health" onclick="showPage('health')"><span class="ico">♡</span>Здоровье</button><button data-page="settings" onclick="showPage('settings')"><span class="ico">⚙</span>Ещё</button></nav>
+<nav class="nav"><button class="active" data-page="home" onclick="showPage('home')"><span class="ico">⌂</span>Обзор</button><button data-page="quests" onclick="showPage('quests')"><span class="ico">☷</span>Квесты</button><button data-page="campaign" onclick="showPage('campaign')"><span class="ico">⚑</span>Кампания</button><button data-page="analytics" onclick="showPage('analytics')"><span class="ico">▥</span>Аналитика</button><button data-page="strategy" onclick="showPage('strategy')"><span class="ico">⌘</span>Стратегия</button><button data-page="goals" onclick="showPage('goals')"><span class="ico">◎</span>Цели</button><button data-page="character" onclick="showPage('character')"><span class="ico">✳</span>Персонаж</button><button data-page="habits" onclick="showPage('habits')"><span class="ico">◷</span>Привычки</button><button data-page="projects" onclick="showPage('projects')"><span class="ico">◇</span>Проекты</button><button data-page="finance" onclick="showPage('finance')"><span class="ico">₽</span>Финансы</button><button data-page="health" onclick="showPage('health')"><span class="ico">♡</span>Здоровье</button><button data-page="settings" onclick="showPage('settings')"><span class="ico">⚙</span>Ещё</button></nav>
 <div class="modalback" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Новая запись</h2><button class="close" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div><div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 <script>
@@ -766,4 +790,4 @@ if('serviceWorker'in navigator&&location.protocol.startsWith('http')){
   }catch(error){console.warn('LEVEL update check failed',error)}
  });
 }
-</script></body></html>
+</script><script src="./level-advanced.js"></script></body></html>
