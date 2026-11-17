@@ -112,13 +112,19 @@
  };
  const oldMilestone=window.toggleMilestone;
  if(typeof oldMilestone==='function')window.toggleMilestone=function(gid,mid){
-  const g=db.goals.find(x=>x.id===gid),m=g?.milestones?.find(x=>x.id===mid);if(!g)return oldMilestone(gid,mid);
+  const g=db.goals.find(x=>x.id===gid),m=g?.milestones?.find(x=>x.id===mid);if(!g||!m)return oldMilestone(gid,mid);
+  if(!m.done){
+   const first=g.milestones.find(x=>!x.done);
+   if(first&&first.id!==mid){toast('Сначала заверши предыдущий шаг — план идёт последовательно.');return}
+   let task=db.tasks.find(t=>t.goal===gid&&t.milestoneId===mid&&!t.replaced);
+   if(!task){ensureGoalTask(g,datePlus(today(),1));task=db.tasks.find(t=>t.goal===gid&&t.milestoneId===mid&&!t.replaced)}
+   if(task&&!task.done&&typeof window.toggleTask==='function'){window.toggleTask(task.id);return}
+  }else{
+   const linked=db.tasks.find(t=>t.goal===gid&&t.milestoneId===mid&&!t.replaced);
+   if(linked?.rewarded){toast('Этот шаг уже подтверждён выполненным квестом.');return}
+  }
   oldMilestone(gid,mid);
-  const linked=db.tasks.find(t=>t.goal===gid&&t.milestoneId===mid&&!t.replaced);
-  if(m?.done&&linked&&!linked.done){linked.done=true;linked.manualCompleted=true}
-  if(!m?.done&&linked?.manualCompleted){linked.done=false;delete linked.manualCompleted}
-  if(m?.done)ensureGoalTask(g,datePlus(today(),1));
-  localStorage.setItem('level-life-v1',JSON.stringify(db));if(typeof markLocalChange==='function')markLocalChange();render();
+  if(ensureGoalTask(g,datePlus(today(),1))){localStorage.setItem('level-life-v1',JSON.stringify(db));if(typeof markLocalChange==='function')markLocalChange();render()}
  };
  const oldAddGoal=window.addGoal;
  if(typeof oldAddGoal==='function')window.addGoal=function(){oldAddGoal();const g=db.goals[db.goals.length-1];if(g){g.createdAt=today();g.goalPlanVersion=0;ensureAutopilotData();render()}};
