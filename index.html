@@ -230,6 +230,25 @@ textarea.field{min-height:70px;resize:vertical}
 }
 
 .advanced-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.strategy-panel{min-width:0}.strategy-panel .task{align-items:flex-start}.strategy-panel .proof{overflow-wrap:anywhere}.strategy-panel a{color:var(--accent)}#page-strategy .section{margin-top:28px}#page-strategy .cards{margin-bottom:4px}#page-strategy .progress{margin:8px 0}.task input[type=checkbox]{accent-color:var(--accent);margin-top:4px}@media(max-width:700px){.advanced-grid{grid-template-columns:1fr}}
+
+/* Celebration and tactile polish */
+.item,.panel,.stat,.healthmetric,.more-card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+@media(hover:hover){.item:hover,.panel:hover,.stat:hover{border-color:#426888;box-shadow:0 10px 28px #0002}.more-card:hover{transform:translateY(-2px);border-color:#6b9dbb}}
+.btn,.check,.nav button{-webkit-tap-highlight-color:transparent}
+.btn:focus-visible,.check:focus-visible{outline-offset:3px}
+.reward-back{display:none;position:fixed;inset:0;z-index:80;align-items:center;justify-content:center;padding:18px;background:#020914b8;backdrop-filter:blur(9px)}
+.reward-back.show{display:flex;animation:reward-fade .18s ease-out}
+.reward-card{width:min(100%,390px);text-align:center;padding:28px 23px 22px;border:1px solid #527b99;border-radius:25px;background:radial-gradient(ellipse at 50% 0%,#285274 0%,#142c45 58%,#102139 100%);box-shadow:0 28px 90px #0009;animation:reward-pop .28s cubic-bezier(.2,.8,.2,1)}
+.reward-symbol{width:68px;height:68px;margin:0 auto 15px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(145deg,#d9f3ff,#8bc9e8);color:#092035;font-size:31px;box-shadow:0 8px 30px #72bfe633}
+.reward-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#b9e5fa;font-weight:850;margin-bottom:7px}
+.reward-card h2{font-size:23px;line-height:1.2;margin:0 0 8px}
+.reward-card p{font-size:13px;color:#b9cde0;margin:0 0 17px}
+.reward-xp{display:inline-block;padding:7px 13px;border-radius:99px;background:#244968;color:#d8f2ff;font-weight:850;font-size:13px;margin-bottom:17px}
+.reward-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.reward-actions .btn{min-width:120px}
+@keyframes reward-fade{from{opacity:0}to{opacity:1}}
+@keyframes reward-pop{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.reward-card{animation:none}}
 </style></head><body><div class="app">
 <header class="top"><div class="brand"><div class="mark">L</div>LEVEL</div><div class="date" id="today"></div><div class="profile"><div class="avatar">Я</div><span>Мой путь</span></div></header>
 <main>
@@ -340,7 +359,7 @@ textarea.field{min-height:70px;resize:vertical}
 <button data-page="character" onclick="showPage('character')"><span class="ico">✳</span>Персонаж</button>
 <button data-page="more" onclick="showPage('more')"><span class="ico">•••</span>Ещё</button>
 </nav>
-<div class="modalback" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Новая запись</h2><button class="close" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div><div class="toast" id="toast"></div>
+<div class="modalback" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Новая запись</h2><button class="close" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div><div class="reward-back" id="rewardBack" role="dialog" aria-modal="true" aria-labelledby="rewardTitle" onclick="if(event.target===this)closeRewardPopup()"><div class="reward-card"><div class="reward-symbol" id="rewardSymbol">✓</div><div class="reward-kicker" id="rewardKicker">РЕЗУЛЬТАТ ЗАСЧИТАН</div><h2 id="rewardTitle">Квест завершён</h2><p id="rewardDetail">Отличная работа. Ещё один шаг вперёд.</p><div class="reward-xp" id="rewardXp">+10 XP</div><div class="reward-actions"><button class="btn primary" onclick="closeRewardPopup()">Продолжить</button><button class="btn" id="soundToggle" onclick="toggleRewardSound()">Звук: вкл.</button></div></div></div><div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 <script>
 const KEY='level-life-v1';
@@ -415,6 +434,15 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function fmt(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)+' ₽'}
 function toast(s){let e=document.getElementById('toast');e.textContent=s;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}
+
+let rewardSoundEnabled=localStorage.getItem('level-sound-enabled')!=='false';
+let rewardQueue=[],rewardShowing=false;
+function playLevelSound(kind){if(!rewardSoundEnabled)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const ctx=new C();const notes=kind==='achievement'?[523.25,659.25,783.99,1046.5]:[587.33,783.99];notes.forEach((hz,i)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=hz;gain.gain.setValueAtTime(.0001,ctx.currentTime+i*.105);gain.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+i*.105+.025);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+i*.105+.19);osc.connect(gain);gain.connect(ctx.destination);osc.start(ctx.currentTime+i*.105);osc.stop(ctx.currentTime+i*.105+.21)});setTimeout(()=>ctx.close(),1100)}catch(e){console.debug('Audio unavailable',e)}}
+function showRewardPopup(item){rewardQueue.push(item);if(!rewardShowing)nextRewardPopup()}
+function nextRewardPopup(){if(!rewardQueue.length){rewardShowing=false;return}rewardShowing=true;const item=rewardQueue.shift(),achievement=item.kind==='achievement';document.getElementById('rewardSymbol').textContent=achievement?'✦':'✓';document.getElementById('rewardKicker').textContent=achievement?'НОВОЕ ДОСТИЖЕНИЕ':'КВЕСТ ЗАВЕРШЁН';document.getElementById('rewardTitle').textContent=item.title;document.getElementById('rewardDetail').textContent=item.detail||'Отличная работа. Продолжай в своём темпе.';document.getElementById('rewardXp').textContent=achievement?'Достижение открыто':'+'+(item.xp||10)+' XP';document.getElementById('soundToggle').textContent='Звук: '+(rewardSoundEnabled?'вкл.':'выкл.');document.getElementById('rewardBack').classList.add('show');playLevelSound(achievement?'achievement':'quest')}
+function closeRewardPopup(){document.getElementById('rewardBack').classList.remove('show');setTimeout(nextRewardPopup,180)}
+function toggleRewardSound(){rewardSoundEnabled=!rewardSoundEnabled;localStorage.setItem('level-sound-enabled',String(rewardSoundEnabled));document.getElementById('soundToggle').textContent='Звук: '+(rewardSoundEnabled?'вкл.':'выкл.');if(rewardSoundEnabled)playLevelSound('achievement')}
+
 function showPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));const target=document.getElementById('page-'+p);if(!target)return;target.classList.add('active');const secondary=['campaign','analytics','strategy','habits','projects','finance','health','settings'];const active=p==='more'||secondary.includes(p)?'more':p;document.querySelectorAll('.nav button').forEach(e=>e.classList.toggle('active',e.dataset.page===active));window.scrollTo({top:0,behavior:'smooth'});render()}
 function modal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalBack').classList.add('show')}
 function closeModal(){document.getElementById('modalBack').classList.remove('show')}
@@ -483,7 +511,7 @@ function reviewTaskReplacement(tid){
  const alt={...t,id:id(),title:alternative,date:t.date,time:t.time,done:false,rewarded:false,replaced:false,replacementOf:t.id,replacementApproved:true,replacementReason:reason,proof:'Выполни альтернативное задание и зафиксируй конкретный результат.'};
  db.tasks.push(alt);closeModal();if(save())toast('Проверка пройдена · задание заменено без изменения XP');
 }
-function toggleTask(tid){let t=db.tasks.find(x=>x.id===tid);if(!t)return;if(!t.done){if(t.boss){let evidence=prompt('Подтверди результат босса: что именно сделал и какой получен результат?');if(!evidence||evidence.trim().length<20){toast('Для босса нужно конкретное подтверждение (от 20 символов)');return}t.bossEvidence=evidence.trim();t.bossVerifiedAt=new Date().toISOString();let boss=db.weeklyBoss;if(boss&&boss.id===t.bossId){boss.done=true;boss.evidence=evidence.trim()}}t.done=true;if(t.milestoneId){let g=db.goals.find(x=>x.id===t.goal),m=g?.milestones?.find(x=>x.id===t.milestoneId);if(m&&!m.done){m.done=true;g.progress=Math.round(g.milestones.filter(x=>x.done).length/g.milestones.length*100)}}if(!t.rewarded){t.rewarded=true;db.activityXP=(db.activityXP||0)+10+(t.boss?30:0);if(t.skillId&&t.skillXp){let skill=db.skills.find(x=>x.id===t.skillId);if(skill)skill.xp=(skill.xp||0)+Number(t.skillXp)}}}else{if(t.boss)return toast('Завершённого босса нельзя отменить: сохрани подтверждённый результат.');t.done=false}updateStreak();refreshAchievements();save()}
+function toggleTask(tid){let t=db.tasks.find(x=>x.id===tid);if(!t)return;if(!t.done){if(t.boss){let evidence=prompt('Подтверди результат босса: что именно сделал и какой получен результат?');if(!evidence||evidence.trim().length<20){toast('Для босса нужно конкретное подтверждение (от 20 символов)');return}t.bossEvidence=evidence.trim();t.bossVerifiedAt=new Date().toISOString();let boss=db.weeklyBoss;if(boss&&boss.id===t.bossId){boss.done=true;boss.evidence=evidence.trim()}}const previousAchievements=new Set((db.achievements||[]).map(a=>a.key));t.done=true;if(t.milestoneId){let g=db.goals.find(x=>x.id===t.goal),m=g?.milestones?.find(x=>x.id===t.milestoneId);if(m&&!m.done){m.done=true;g.progress=Math.round(g.milestones.filter(x=>x.done).length/g.milestones.length*100)}}if(!t.rewarded){t.rewarded=true;db.activityXP=(db.activityXP||0)+10+(t.boss?30:0);if(t.skillId&&t.skillXp){let skill=db.skills.find(x=>x.id===t.skillId);if(skill)skill.xp=(skill.xp||0)+Number(t.skillXp)}}updateStreak();refreshAchievements();const newly=(db.achievements||[]).filter(a=>!previousAchievements.has(a.key));if(save()){playLevelSound('quest');showRewardPopup({kind:'quest',title:t.title,detail:'Квест завершён',xp:t.rewarded?(10+(t.boss?30:0)):0});newly.forEach((a,i)=>setTimeout(()=>showRewardPopup({kind:'achievement',title:a.title,detail:a.desc,xp:0}),650+(i*450)))}}else{if(t.boss)return toast('Завершённого босса нельзя отменить: сохрани подтверждённый результат.');t.done=false;save()}}
 function updateStreak(){let d=today();if(db.pauseDates.includes(d))return;let completed=db.tasks.some(t=>t.date===d&&t.done)||db.habits.some(h=>h.logs.includes(d));if(completed&&db.lastActive!==d){let y=new Date();y.setDate(y.getDate()-1);let yd=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');while(db.pauseDates.includes(yd)){y.setDate(y.getDate()-1);yd=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0')}db.streak=db.lastActive===yd?(db.streak||0)+1:1;db.lastActive=d}}
 function toggleHabit(hid){let h=db.habits.find(x=>x.id===hid);if(!h)return;let d=today();if(h.logs.includes(d)){h.logs=h.logs.filter(x=>x!==d)}else{h.logs.push(d);h.xpDates=h.xpDates||[];if(!h.xpDates.includes(d)){h.xpDates.push(d);db.activityXP=(db.activityXP||0)+5}updateStreak()}save()}
 function togglePause(){let d=today();if(db.pauseDates.includes(d))db.pauseDates=db.pauseDates.filter(x=>x!==d);else db.pauseDates.push(d);save()}
