@@ -130,5 +130,5 @@
  window.ensureAutopilotData=ensureAutopilotData;
  window.renderAutopilot=renderAutopilot;
  ensureAutopilotData();
- renderAutopilot();
+ if(typeof render==='function')render();else renderAutopilot();
 })();
