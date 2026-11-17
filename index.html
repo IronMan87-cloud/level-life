@@ -46,14 +46,13 @@ h1{letter-spacing:-.055em}.eyebrow{color:#83d4ff}.heroMain,.heroSide,.panel,.sta
 <div id="syncStatus" class="healthnote" style="margin-top:12px">Пока не подключено. Данные остаются на этом устройстве.</div>
 <div id="syncSignedOut" style="margin-top:12px">
 <label for="syncEmail">Твой email для входа</label><input class="field" id="syncEmail" type="email" autocomplete="email" placeholder="name@example.com">
-<button class="btn primary" id="syncLinkBtn" style="width:100%;margin-top:10px" onclick="sendSyncCode()">Отправить код на email</button>
-<div id="syncOtpBox" style="display:none;margin-top:14px">
-<label for="syncOtp">Шестизначный код из письма</label>
-<input class="field" id="syncOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="123456">
-<button class="btn primary" id="syncVerifyBtn" style="width:100%;margin-top:10px" onclick="verifySyncCode()">Подтвердить код и подключить</button>
-<p class="muted" style="font-size:11px;margin-top:8px">Вводи код прямо здесь, в приложении LEVEL. Не открывай ссылку из письма.</p>
+<button class="btn primary" id="syncLinkBtn" style="width:100%;margin-top:10px" onclick="sendSyncLink()">Отправить ссылку на email</button>
+<div id="syncLinkBox" style="display:none;margin-top:14px">
+<label for="syncMagicLink">Скопируй ссылку из письма и вставь сюда</label>
+<textarea class="field" id="syncMagicLink" rows="3" autocomplete="off" placeholder="Вставь сюда ссылку из письма Supabase"></textarea>
+<button class="btn primary" id="syncVerifyBtn" style="width:100%;margin-top:10px" onclick="verifySyncLink()">Подтвердить ссылку и подключить</button>
+<p class="muted" style="font-size:11px;margin-top:8px">Важно: не открывай ссылку. В почте нажми и удерживай её, выбери «Скопировать ссылку», затем вставь сюда. Так авторизация завершится именно в LEVEL, а не в Safari.</p>
 </div>
-<p class="muted" style="font-size:11px;margin-top:10px">Для отправки кода используется шаблон Magic Link в Supabase. В нём должен быть указан {{ .Token }}, а не {{ .ConfirmationURL }}. <a href="https://supabase.com/dashboard/project/vlbheybdqnddaxykalth/auth/templates" target="_blank" rel="noopener" style="color:var(--blue)">Открыть шаблоны писем</a>.</p>
 </div>
 <div id="syncSignedIn" style="display:none;margin-top:12px">
 <div class="itemfoot"><span id="syncAccountLabel">Аккаунт подключён</span><span class="tag">Облако</span></div>
@@ -222,7 +221,6 @@ function resetData(){if(confirm('Точно удалить все данные L
 const SUPABASE_URL='https://vlbheybdqnddaxykalth.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_YgaJxEM7IEkpZwhGFlBA2w_dX2oVMFb';
 const SYNC_META_KEY='level-life-sync-meta-v1';
-const SYNC_PENDING_EMAIL_KEY='level-life-sync-pending-email-v1';
 let supabaseClient=null,syncUser=null,syncTimer=null,syncBusy=false,syncConflictData=null;
 function readSyncMeta(){try{return JSON.parse(localStorage.getItem(SYNC_META_KEY)||'{}')}catch(_){return {}}}
 function writeSyncMeta(patch){localStorage.setItem(SYNC_META_KEY,JSON.stringify({...readSyncMeta(),...patch}))}
@@ -289,41 +287,48 @@ async function resolveSyncConflict(choice){
  try{if(choice==='cloud')downloadCloudSnapshot(syncConflictData);else await uploadLocalSnapshot()}
  catch(error){console.error(error);setSyncStatus('Не удалось разрешить конфликт: '+(error.message||'ошибка'))}
 }
-async function sendSyncCode(){
+async function sendSyncLink(){
  if(!supabaseClient){setSyncStatus('Не загрузилась библиотека Supabase. Обнови страницу при наличии интернета.');return}
  const email=document.getElementById('syncEmail')?.value?.trim();
  if(!email||!email.includes('@')){toast('Укажи корректный email');return}
- const button=document.getElementById('syncLinkBtn');if(button){button.disabled=true;button.textContent='Отправляю код…'}
+ const button=document.getElementById('syncLinkBtn');if(button){button.disabled=true;button.textContent='Отправляю…'}
  try{
-  const {error}=await supabaseClient.auth.signInWithOtp({email,options:{shouldCreateUser:false}});
+  const {error}=await supabaseClient.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:window.location.origin+window.location.pathname}});
   if(error)throw error;
-  localStorage.setItem(SYNC_PENDING_EMAIL_KEY,email);
-  const otpBox=document.getElementById('syncOtpBox');if(otpBox)otpBox.style.display='block';
-  const otp=document.getElementById('syncOtp');if(otp)otp.focus();
-  setSyncStatus('Код отправлен на '+email+'. Введи шестизначный код из письма прямо здесь.');
+  const box=document.getElementById('syncLinkBox');if(box)box.style.display='block';
+  setSyncStatus('Письмо отправлено на '+email+'. Скопируй ссылку из письма и вставь её в LEVEL.');
  }catch(error){
-  console.error('LEVEL OTP request failed',error);
-  setSyncStatus('Не удалось отправить код: '+(error.message||'проверь email и настройки Supabase'));
- }finally{if(button){button.disabled=false;button.textContent='Отправить код повторно'}}
+  console.error('LEVEL magic link request failed',error);
+  setSyncStatus('Не удалось отправить ссылку: '+(error.message||'проверь email и настройки Supabase'));
+ }finally{if(button){button.disabled=false;button.textContent='Отправить ссылку повторно'}}
 }
-async function verifySyncCode(){
+async function verifySyncLink(){
  if(!supabaseClient){setSyncStatus('Библиотека Supabase не загружена.');return}
- const email=document.getElementById('syncEmail')?.value?.trim()||localStorage.getItem(SYNC_PENDING_EMAIL_KEY)||'';
- const token=Array.from(document.getElementById('syncOtp')?.value||'').filter(ch=>ch>='0'&&ch<='9').join('').slice(0,6);
- if(!email||!email.includes('@')){toast('Сначала укажи email');return}
- if(token.length!==6){toast('Введи все 6 цифр из письма');return}
+ const raw=document.getElementById('syncMagicLink')?.value?.trim()||'';
+ if(!raw){toast('Сначала вставь ссылку из письма');return}
+ let tokenHash='',type='email';
+ try{
+  if(/^https?:\/\//i.test(raw)){
+   const url=new URL(raw);
+   tokenHash=url.searchParams.get('token_hash')||url.searchParams.get('token')||'';
+   type=url.searchParams.get('type')||'email';
+  }else{
+   tokenHash=raw;
+  }
+ }catch(_){toast('Не удалось прочитать ссылку. Скопируй её целиком из письма.');return}
+ if(!tokenHash){toast('В ссылке не найден ключ подтверждения. Скопируй ссылку целиком.');return}
  const button=document.getElementById('syncVerifyBtn');if(button){button.disabled=true;button.textContent='Проверяю…'}
  try{
-  const {data,error}=await supabaseClient.auth.verifyOtp({email,token,type:'email'});
+  const {data,error}=await supabaseClient.auth.verifyOtp({token_hash:tokenHash,type});
   if(error)throw error;
-  if(!data.session?.user)throw new Error('Код принят, но сессия не создана. Запроси новый код.');
-  localStorage.removeItem(SYNC_PENDING_EMAIL_KEY);
+  if(!data.session?.user)throw new Error('Подтверждение прошло, но сессия не создана. Запроси новую ссылку.');
+  const input=document.getElementById('syncMagicLink');if(input)input.value='';
   setSyncStatus('Вход подтверждён. Подключаю облачную синхронизацию…');
   await initSyncForUser(data.session.user);
  }catch(error){
-  console.error('LEVEL OTP verification failed',error);
-  setSyncStatus('Не удалось подтвердить код: '+(error.message||'проверь код и запроси новый при необходимости'));
- }finally{if(button){button.disabled=false;button.textContent='Подтвердить код и подключить'}}
+  console.error('LEVEL magic link verification failed',error);
+  setSyncStatus('Не удалось подтвердить ссылку: '+(error.message||'ссылка могла истечь или уже использоваться. Запроси новую.'));
+ }finally{if(button){button.disabled=false;button.textContent='Подтвердить ссылку и подключить'}}
 }
 async function signOutSync(){
  if(!supabaseClient)return;
