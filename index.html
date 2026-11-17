@@ -497,14 +497,19 @@ function addProject(){if(!val('fTitle'))return toast('Укажи проект');
 function addTransaction(){let n=Number(val('fAmount'));if(!Number.isFinite(n)||n<=0||n>1000000000000)return toast('Укажи корректную сумму');db.transactions.unshift({id:id(),type:val('fType'),amount:n,title:val('fTitle')||'Без описания',date:today()});closeModal();if(save())toast('Запись сохранена')}
 function addProof(sid){let title=val('fTitle'),desc=val('fDesc'),v=Number(val('fValue')),unit=val('fUnit');if(!title||!desc||!unit||!Number.isFinite(v))return toast('Заполни результат и доказательство');let p={id:id(),skill:sid,title,desc,value:v,unit,direction:val('fDirection')||'higher',type:val('fType'),date:today(),status:'pending'};db.proofs.unshift(p);closeModal();if(save())toast('Доказательство ожидает подтверждения')}
 function approveProof(pid){let p=db.proofs.find(x=>x.id===pid);if(!p||p.status==='approved')return;let old=db.proofs.filter(x=>x.skill===p.skill&&x.status==='approved'&&x.title===p.title&&x.unit===p.unit&&(x.direction||'higher')===(p.direction||'higher'));let best=old.length?(p.direction==='lower'?Math.min(...old.map(x=>Number(x.value))):Math.max(...old.map(x=>Number(x.value)))):null;if(best!==null&&(p.direction==='lower'?Number(p.value)>=best:Number(p.value)<=best))return toast('Нужно улучшить прошлый результат');p.status='approved';p.xp=20;let s=db.skills.find(x=>x.id===p.skill);if(s)s.xp=(s.xp||0)+20;save();toast('Результат подтверждён · +20 XP навыку')}
-function requestTaskReplacement(tid){const t=db.tasks.find(x=>x.id===tid);if(!t||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Этот квест уже нельзя заменить');openModal('replaceTask',tid)}
+function showReplacementDecision(tid){
+ const t=db.tasks.find(x=>x.id===tid),decision=document.getElementById('replacementDecision');if(!t?.replacementPending||!decision)return;
+ decision.style.display='block';
+ decision.innerHTML='<strong>Заявка подготовлена.</strong><p>Открой ChatGPT через меню «Поделиться» и дождись решения. Вернись сюда только после ответа.</p><button class="btn primary" onclick="approveTaskReplacement(\\''+t.id+'\\')">ChatGPT одобрил — применить замену</button> <button class="btn" onclick="rejectTaskReplacement(\\''+t.id+'\\')">Отклонить / оставить исходный квест</button>';
+}
+function requestTaskReplacement(tid){const t=db.tasks.find(x=>x.id===tid);if(!t||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Этот квест уже нельзя заменить');openModal('replaceTask',tid);showReplacementDecision(tid)}
 async function reviewTaskReplacement(tid){
- const t=db.tasks.find(x=>x.id===tid);if(!t||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Квест уже выполнен или заменён');
+ const t=db.tasks.find(x=>x.id===tid);if(!t||t.done||t.rewarded||t.replaced||t.replacementOf)return toast('Квест уже выполнен или заменён');if(t.replacementPending)return toast('Заявка уже отправлена. Сначала заверши проверку в ChatGPT.');
  const type=document.getElementById('replaceReasonType')?.value||'other',reason=val('replaceReason'),alternative=val('replaceAlternative');
  if(reason.trim().length<8)return toast('Коротко опиши, что именно произошло.');
  if(alternative.trim().length<8)return toast('Предложи конкретную альтернативу.');
  const skill=db.skills.find(s=>s.id===t.skillId);
- const goal=db.goals.find(g=>g.id===t.goalId);
+ const goal=db.goals.find(g=>g.id===(t.goalId||t.goal));
  const prompt=[
   'Проверь замену квеста в моей RPG-системе LEVEL. Ты принимаешь решение как внимательный наставник, а не по ключевым словам.',
   'Оцени отдельно: 1) действительно ли указанное обстоятельство мешает исходному заданию; 2) сохраняет ли альтернатива связь с той же целью и навыком; 3) сопоставимы ли усилия и сложность; 4) не позволяет ли замена просто избежать неприятной, но выполнимой работы.',
@@ -539,11 +544,7 @@ async function reviewTaskReplacement(tid){
  if(!shared&&!copied)return toast('Не удалось открыть меню отправки или скопировать заявку. Попробуй ещё раз.');
  t.replacementPending={type,reason,alternative,prompt,requestedAt:new Date().toISOString()};
  if(!save())return;
- const decision=document.getElementById('replacementDecision');
- if(decision){
-  decision.style.display='block';
-  decision.innerHTML='<strong>Заявка подготовлена.</strong><p>Открой ChatGPT через меню «Поделиться» и дождись решения. Вернись сюда только после ответа.</p><button class="btn primary" onclick="approveTaskReplacement(\''+t.id+'\')">ChatGPT одобрил — применить замену</button> <button class="btn" onclick="rejectTaskReplacement(\''+t.id+'\')">Отклонить / оставить исходный квест</button>';
- }
+ showReplacementDecision(tid);
  toast(shared?'Выбери ChatGPT в меню «Поделиться»':'Заявка скопирована — вставь её в ChatGPT');
 }
 function approveTaskReplacement(tid){
