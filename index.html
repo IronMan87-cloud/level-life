@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080f1d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#091525"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="LEVEL — личная RPG-система целей, действий и роста."><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon.svg"><title>LEVEL — личная RPG</title>
 <style>
 :root{
@@ -16,6 +16,7 @@
   --accent:#a9def5;
   --accent-strong:#72bfe6;
   --accent-ink:#092035;
+  --lime:var(--accent);
   --red:#f08d9a;
   --gold:#e8c98b;
   --r:20px;
@@ -426,25 +427,28 @@ function importData(e){
    const source=JSON.parse(reader.result);
    if(!source||typeof source!=='object'||Array.isArray(source)||!Array.isArray(source.tasks)||!Array.isArray(source.goals))throw new Error('invalid backup');
    const healthSource=source.health&&typeof source.health==='object'&&!Array.isArray(source.health)?source.health:{};
-   const importedGoals=normalizeImportedRecords(source.goals).map(goal=>({...goal,milestones:normalizeImportedRecords(goal.milestones)}));
+   const importedTasks=normalizeImportedRecords(source.tasks).map(task=>({...task,done:!!task.done,rewarded:!!task.rewarded}));
+   const importedGoals=normalizeImportedRecords(source.goals).map(goal=>({...goal,progress:Number.isFinite(Number(goal.progress))?Math.max(0,Math.min(100,Number(goal.progress))):0,milestones:normalizeImportedRecords(goal.milestones).map(m=>({...m,done:!!m.done}))}));
+   const importedSkills=normalizeImportedRecords(source.skills).map(skill=>({...skill,xp:Number.isFinite(Number(skill.xp))?Math.max(0,Number(skill.xp)):0}));
    const importedHabits=normalizeImportedRecords(source.habits).map(habit=>({...habit,logs:Array.isArray(habit.logs)?habit.logs.filter(x=>typeof x==='string'):[],xpDates:Array.isArray(habit.xpDates)?habit.xpDates.filter(x=>typeof x==='string'):[]}));
    const importedHealth={heightCm:185,weightKg:70,meals:[],weightLogs:[],...healthSource};
    importedHealth.meals=normalizeImportedRecords(healthSource.meals);
    importedHealth.weightLogs=normalizeImportedRecords(healthSource.weightLogs);
-   const importedXP=Number(source.activityXP);
+   const importedProofs=normalizeImportedRecords(source.proofs).map(p=>({...p,status:p.status==='pending'?'pending':'approved',direction:p.direction==='lower'?'lower':'higher',value:Number.isFinite(Number(p.value))?Number(p.value):0,xp:Number.isFinite(Number(p.xp))?Math.max(0,Number(p.xp)):0}));
+   const importedXP=source.activityXP===undefined?importedTasks.filter(task=>task.done).length*10:Number(source.activityXP);
    db={
     ...fresh(),...source,
-    tasks:normalizeImportedRecords(source.tasks),
+    tasks:importedTasks,
     goals:importedGoals,
-    skills:normalizeImportedRecords(source.skills),
-    projects:normalizeImportedRecords(source.projects),
-    transactions:normalizeImportedRecords(source.transactions).filter(x=>Number.isFinite(Number(x.amount))&&Number(x.amount)>0),
-    proofs:normalizeImportedRecords(source.proofs).map(p=>({...p,status:p.status==='pending'?'pending':'approved',direction:p.direction==='lower'?'lower':'higher'})),
+    skills:importedSkills,
+    projects:normalizeImportedRecords(source.projects).map(project=>({...project,done:!!project.done})),
+    transactions:normalizeImportedRecords(source.transactions).filter(x=>Number.isFinite(Number(x.amount))&&Number(x.amount)>0&&['in','out'].includes(x.type)),
+    proofs:importedProofs,
     habits:importedHabits,
     pauseDates:Array.isArray(source.pauseDates)?source.pauseDates.filter(x=>typeof x==='string'):[],
     health:importedHealth,
     activityXP:Number.isFinite(importedXP)&&importedXP>=0?importedXP:0,
-    starterApplied:true
+    starterApplied:true,dailyTemplateDate:today()
    };
    if(!Number.isFinite(Number(db.health.heightCm))||db.health.heightCm<100||db.health.heightCm>250)db.health.heightCm=185;
    if(!Number.isFinite(Number(db.health.weightKg))||db.health.weightKg<20||db.health.weightKg>400)db.health.weightKg=70;
