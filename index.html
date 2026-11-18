@@ -245,30 +245,37 @@ textarea.field{min-height:70px;resize:vertical}
 @media(hover:hover){.item:hover,.panel:hover,.stat:hover{border-color:#426888;box-shadow:0 10px 28px #0002}.more-card:hover{transform:translateY(-2px);border-color:#6b9dbb}}
 .btn,.check,.nav button{-webkit-tap-highlight-color:transparent}
 .btn:focus-visible,.check:focus-visible{outline-offset:3px}
-.reward-back{display:none;position:fixed;inset:0;z-index:80;align-items:center;justify-content:center;padding:18px;background:#020914b8;backdrop-filter:blur(9px)}
-.reward-back.show{display:flex;animation:reward-fade .18s ease-out}
-.reward-card{width:min(100%,390px);text-align:center;padding:28px 23px 22px;border:1px solid #527b99;border-radius:25px;background:radial-gradient(ellipse at 50% 0%,#285274 0%,#142c45 58%,#102139 100%);box-shadow:0 28px 90px #0009;animation:reward-pop .28s cubic-bezier(.2,.8,.2,1)}
-.reward-symbol{width:68px;height:68px;margin:0 auto 15px;display:grid;place-items:center;border-radius:22px;background:linear-gradient(145deg,#d9f3ff,#8bc9e8);color:#092035;font-size:31px;box-shadow:0 8px 30px #72bfe633}
-.reward-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#b9e5fa;font-weight:850;margin-bottom:7px}
-.reward-card h2{font-size:23px;line-height:1.2;margin:0 0 8px}
-.reward-card p{font-size:13px;color:#b9cde0;margin:0 0 17px}
-.reward-xp{display:inline-block;padding:7px 13px;border-radius:99px;background:#244968;color:#d8f2ff;font-weight:850;font-size:13px;margin-bottom:17px}
-.reward-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.reward-actions .btn{min-width:120px}
-@keyframes reward-fade{from{opacity:0}to{opacity:1}}
-@keyframes reward-pop{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-@media(prefers-reduced-motion:reduce){.reward-card{animation:none}}
-
 /* Goal autopilot and calmer information architecture */
 .goal-step{display:grid;grid-template-columns:24px minmax(0,1fr);gap:9px;align-items:start;padding:10px 0;border-top:1px solid #d9edff10}.goal-step-main{min-width:0}.goal-step-title{font-size:12px;font-weight:750;line-height:1.45}.goal-step-detail,.goal-step-proof,.goal-step-task{font-size:10px;color:var(--muted);line-height:1.5;margin-top:4px}.goal-step-task{color:#b9e5fa}.autoprofile-chip{display:inline-block;padding:4px 8px;margin:5px 5px 0 0;border-radius:8px;background:#1a3550;color:#c2dced;font-size:10px}.tool-fold{margin-top:18px;border:1px solid var(--line);border-radius:16px;background:#0e1d30;overflow:hidden}.tool-fold summary{padding:15px 17px;cursor:pointer;font-weight:750;font-size:13px;color:var(--accent);list-style:none}.tool-fold summary::-webkit-details-marker{display:none}.tool-fold summary:after{content:'＋';float:right;color:var(--muted)}.tool-fold[open] summary:after{content:'−'}.tool-fold-inner{padding:0 14px 14px}.tool-fold-inner>.section:first-child{margin-top:8px}
-</style></head><body><div class="app">
+</style><link rel="stylesheet" href="./level-mobile.css"></head><body><div class="app">
 <header class="top"><div class="brand"><div class="mark">L</div>LEVEL</div><div class="date" id="today"></div><div class="profile"><div class="avatar">Я</div><span>Мой путь</span></div></header>
 <main>
 <section class="page active" id="page-home">
-<div class="hero"><div class="heroMain"><div class="eyebrow">Твоя система роста</div><h1>Становись сильнее.<br>День за днём.</h1><p class="sub">Не идеальный день. Просто следующий шаг.</p><div class="levelrow"><div><div class="muted" style="font-size:11px">ОБЩИЙ УРОВЕНЬ</div><div class="level" id="heroLevel">1 <small>LVL</small></div></div><div class="muted" id="xpLabel">0 / 100 XP</div></div><div class="progress"><span id="heroProgress" style="width:0"></span></div><p class="muted" id="rankLabel" style="font-size:11px;margin:0">Новичок · путь начинается</p></div><div class="heroSide"><div><div class="eyebrow">Фокус на сегодня</div><div class="big" id="focusCount">0 задач</div><p class="sub" id="focusSub">Выбери 1–3 важных результата.</p></div><button class="btn primary" onclick="openModal('task')">＋ Новый квест</button></div></div>
-<div class="stats"><div class="stat"><label>Квесты сегодня</label><strong id="statTasks">0/0</strong><em id="taskRate">—</em></div><div class="stat"><label>Активные цели</label><strong id="statGoals">0</strong></div><div class="stat"><label>Навыки</label><strong id="statSkills">0</strong></div><div class="stat"><label>Серия дней</label><strong id="statStreak">0</strong></div></div>
-<div class="section"><h2>Главное на сегодня</h2><button class="link" onclick="showPage('quests')">Все квесты →</button></div><div class="grid2"><div class="panel"><h3>План дня</h3><div id="homeTasks"></div></div><div class="panel"><h3>Долгосрочные ориентиры</h3><div id="homeGoals"></div></div></div>
-<div class="section"><h2>Твой профиль и курс</h2></div><div class="grid2"><div class="panel" id="homeProfile"><div class="empty">Профиль собирается из твоих целей, навыков и предпочтений.</div></div><div class="panel"><h3>Ближайшие действия к большим целям</h3><div id="homeNextSteps"></div></div></div><div class="section"><h2>Последние достижения</h2><button class="link" onclick="showPage('character')">Персонаж →</button></div><div class="panel" id="homeProof"><div class="empty">Твои подтверждённые результаты появятся здесь.</div></div>
+<div class="today-hero">
+  <div class="today-summary">
+    <h1>Сегодня</h1>
+    <p id="focusSub" class="sub"></p>
+    <progress id="dayProgress" aria-label="Выполненные квесты за день" max="1" value="0"></progress>
+    <div class="today-metrics">
+      <div><strong id="statTasks">0/0</strong><span>Квесты</span></div>
+      <div><strong id="dayXP">0</strong><span>XP за день</span></div>
+      <div><strong id="statStreak">0</strong><span>Дней подряд</span></div>
+    </div>
+  </div>
+  <div class="today-level">
+    <div class="levelrow"><div class="level" id="heroLevel">1 <small>LVL</small></div><span id="xpLabel">0 / 100 XP</span></div>
+    <div class="progress" aria-hidden="true"><span id="heroProgress"></span></div>
+    <p class="muted" id="rankLabel"></p>
+    <div class="today-actions">
+      <button class="btn primary" onclick="openModal('task')">＋ Квест</button>
+      <button class="btn" onclick="showPage('habits')">Отметить привычку</button>
+    </div>
+  </div>
+</div>
+<div class="section"><h2>Приоритетные квесты</h2><button class="link" onclick="showPage('quests')">Все квесты →</button></div>
+<div class="panel" id="homeTasks"></div>
+<div class="section"><h2>Долгосрочные ориентиры</h2></div><div class="panel" id="homeGoals"></div>
+<div class="section"><h2>Твой профиль и курс</h2></div><div class="grid2"><div class="panel" id="homeProfile"><div class="empty">Профиль собирается из твоих целей, навыков и предпочтений.</div></div><div class="panel"><h3>Ближайшие действия к большим целям</h3><div id="homeNextSteps"></div></div></div><div class="section"><h2>Последние достижения</h2><button class="link" onclick="showPage('character')">Персонаж →</button></div><div class="panel today-achievements" id="homeAchievements"></div><div class="panel" id="homeProof"><div class="empty">Твои подтверждённые результаты появятся здесь.</div></div>
 </section>
 <section class="page" id="page-quests"><div class="section"><h2>Квесты и план дня</h2><button class="btn primary" onclick="openModal('task')">＋ Квест</button></div><p class="sub">Сложность сбалансирована. Старайся выбирать 1–3 главных результата на день.</p><div class="panel" style="margin-top:14px"><div id="allTasks"></div></div></section>
 <section class="page" id="page-goals"><div class="section"><h2>Большие цели</h2><button class="btn primary" onclick="openModal('goal')">＋ Цель</button></div><p class="sub">Разбей большую цель на этапы и двигайся по одному следующему шагу.</p><div class="cards" id="goalCards" style="margin-top:14px"></div></section>
@@ -313,8 +320,9 @@ textarea.field{min-height:70px;resize:vertical}
 </section>
 <section class="page" id="page-more">
 <div class="section"><h2>Разделы LEVEL</h2></div>
-<p class="sub">Оставил только основные направления. Дополнительные инструменты находятся внутри соответствующих разделов.</p>
+
 <div class="more-grid">
+<button class="more-card" onclick="showPage('goals')"><span class="more-icon">◎</span><span><strong>Большие цели</strong><small>Сроки и этапы</small></span></button>
 <button class="more-card" onclick="showPage('campaign')"><span class="more-icon">⚑</span><span><strong>Путь и цели</strong><small>Большие цели, следующие шаги и аналитика</small></span><span class="more-arrow">›</span></button>
 <button class="more-card" onclick="showPage('strategy')"><span class="more-icon">⌘</span><span><strong>Проекты и развитие</strong><small>Проекты, советник и подтверждение навыков</small></span><span class="more-arrow">›</span></button>
 <button class="more-card" onclick="showPage('habits')"><span class="more-icon">◷</span><span><strong>Ритм и здоровье</strong><small>Привычки, физическая форма и дневник</small></span><span class="more-arrow">›</span></button>
@@ -323,7 +331,7 @@ textarea.field{min-height:70px;resize:vertical}
 </div></section>
 <section class="page" id="page-settings"><div class="section"><h2>Настройки и данные</h2></div><div class="panel"><h3>Синхронизация с ChatGPT</h3>
 <p class="sub">Подключи аккаунт один раз. LEVEL будет автоматически отправлять изменения в защищённую облачную базу, а ChatGPT сможет читать актуальные записи через подключённый Supabase.</p>
-<div id="syncStatus" class="healthnote" style="margin-top:12px">Пока не подключено. Данные остаются на этом устройстве.</div>
+<div id="syncStatus" role="status" class="healthnote" style="margin-top:12px">Пока не подключено. Данные остаются на этом устройстве.</div>
 <div id="syncSignedOut" style="margin-top:12px">
 <label for="syncEmail">Email аккаунта</label>
 <input class="field" id="syncEmail" type="email" autocomplete="username" placeholder="name@example.com">
@@ -359,24 +367,44 @@ textarea.field{min-height:70px;resize:vertical}
 <p class="muted" style="font-size:11px;margin-top:14px">В облако отправляется весь снимок LEVEL, включая финансы, здоровье, питание, цели, квесты, навыки, привычки, проекты и доказательства. Не подключай синхронизацию на чужом устройстве. Локальная работа и резервный экспорт сохраняются; при отсутствии интернета изменения отправятся позже.</p>
 <div class="toolbar" style="margin-top:15px"><button class="btn" onclick="exportData()">Экспорт резервной копии</button><label class="btn" style="margin:0">Импорт<input type="file" accept="application/json" onchange="importData(event)" hidden></label></div>
 <p class="muted" style="font-size:11px">Резервную копию всё равно полезно периодически сохранять отдельно.</p>
-</div><div class="panel" style="margin-top:12px"><h3>Пауза / восстановление</h3><p class="sub">Если болезнь или объективные обстоятельства мешают выполнять план, включи паузу. Уже заработанный XP не уменьшается.</p><button class="btn" id="pauseBtn" onclick="togglePause()">Включить паузу на сегодня</button></div><div class="panel" style="margin-top:12px"><h3>Сброс</h3><p class="sub">Удалит все данные LEVEL на этом устройстве.</p><button class="btn danger" onclick="resetData()">Удалить мои данные</button></div><p class="muted" style="font-size:11px;margin-top:15px">LEVEL 3.1 · Personal Growth RPG</p></section>
+</div><div class="panel" style="margin-top:12px"><h3>Обратная связь</h3><button class="btn" id="soundToggle" aria-pressed="false" onclick="toggleRewardSound()">Звук наград</button></div><div class="panel" style="margin-top:12px"><h3>Пауза / восстановление</h3><p class="sub">Если болезнь или объективные обстоятельства мешают выполнять план, включи паузу. Уже заработанный XP не уменьшается.</p><button class="btn" id="pauseBtn" onclick="togglePause()">Включить паузу на сегодня</button></div><div class="panel" style="margin-top:12px"><h3>Сброс</h3><p class="sub">Удалит все данные LEVEL на этом устройстве.</p><button class="btn danger" onclick="resetData()">Удалить мои данные</button></div><p class="muted" style="font-size:11px;margin-top:15px">LEVEL 4.0</p></section>
 </main></div>
 <nav class="nav" aria-label="Основная навигация">
-<button class="active" data-page="home" onclick="showPage('home')"><span class="ico">⌂</span>Обзор</button>
-<button data-page="quests" onclick="showPage('quests')"><span class="ico">☷</span>Квесты</button>
-<button data-page="goals" onclick="showPage('goals')"><span class="ico">◎</span>Цели</button>
-<button data-page="character" onclick="showPage('character')"><span class="ico">✳</span>Персонаж</button>
-<button data-page="more" onclick="showPage('more')"><span class="ico">•••</span>Ещё</button>
+<button class="active" aria-current="page" data-page="home" onclick="showPage('home')"><span class="ico" aria-hidden="true">⌂</span>Сегодня</button>
+<button data-page="quests" onclick="showPage('quests')"><span class="ico" aria-hidden="true">☷</span>Квесты</button>
+<button data-page="character" onclick="showPage('character')"><span class="ico" aria-hidden="true">✳</span>Персонаж</button>
+<button data-page="more" onclick="showPage('more')"><span class="ico" aria-hidden="true">•••</span>Ещё</button>
 </nav>
-<div class="modalback" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Новая запись</h2><button class="close" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div><div class="reward-back" id="rewardBack" role="dialog" aria-modal="true" aria-labelledby="rewardTitle" onclick="if(event.target===this)closeRewardPopup()"><div class="reward-card"><div class="reward-symbol" id="rewardSymbol">✓</div><div class="reward-kicker" id="rewardKicker">РЕЗУЛЬТАТ ЗАСЧИТАН</div><h2 id="rewardTitle">Квест завершён</h2><p id="rewardDetail">Отличная работа. Ещё один шаг вперёд.</p><div class="reward-xp" id="rewardXp">+10 XP</div><div class="reward-actions"><button class="btn primary" onclick="closeRewardPopup()">Продолжить</button><button class="btn" id="soundToggle" onclick="toggleRewardSound()">Звук: вкл.</button></div></div></div><div class="toast" id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
+<div class="modalback" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modalhead"><h2 id="modalTitle">Новая запись</h2><button class="close" aria-label="Закрыть" onclick="closeModal()">×</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast" role="status" aria-atomic="true"></div><div class="reward-note" id="rewardNote" role="status" aria-atomic="true"></div>
+<script id="supabaseLibrary" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 <script>
 const KEY='level-life-v1';
 const HAD_LOCAL_DATA_AT_BOOT=!!localStorage.getItem(KEY);
 const fresh=()=>({tasks:[],goals:[],skills:[],projects:[],transactions:[],proofs:[],habits:[],health:{heightCm:185,weightKg:70,meals:[],weightLogs:[]},pauseDates:[],lastActive:null,streak:0});
 let db=load();
-function load(){try{let x=JSON.parse(localStorage.getItem(KEY)||'{}');if(x.activityXP===undefined)x.activityXP=(x.tasks||[]).filter(t=>t.done).length*10;return {...fresh(),...x,tasks:(x.tasks||[]).map(t=>({...t,rewarded:!!t.rewarded})),goals:(x.goals||[]).map(g=>({...g,milestones:g.milestones||[]})),proofs:(x.proofs||[]).map(p=>({...p,status:p.status||'approved'})),habits:x.habits||[],health:{heightCm:185,weightKg:70,meals:[],weightLogs:[],...(x.health||{})}}}catch(e){return fresh()}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(db));markLocalChange();render();return true}catch(e){console.error('LEVEL save failed',e);toast('Не удалось сохранить: проверь свободное место Safari');return false}}
+function load(){try{let x=JSON.parse(localStorage.getItem(KEY)||'{}');if(x.activityXP===undefined)x.activityXP=(x.tasks||[]).filter(t=>t.done).length*10;return {...fresh(),...x,tasks:(x.tasks||[]).map(t=>({...t,rewarded:!!(t.rewarded||t.done)})),goals:(x.goals||[]).map(g=>({...g,milestones:g.milestones||[]})),proofs:(x.proofs||[]).map(p=>({...p,status:p.status||'approved'})),habits:(x.habits||[]).map(habit=>({...habit,xpDates:earnedHabitDates(habit)})),health:{heightCm:185,weightKg:70,meals:[],weightLogs:[],...(x.health||{})}}}catch(e){return fresh()}}
+let userEditedSinceBoot=false;
+let lastSavedXP=Number(db.activityXP)||0;
+let knownAchievements=new Set((db.achievements||[]).map(a=>a.key));
+function save({silent=false}={}){
+ refreshAchievements();
+ const xp=Number(db.activityXP)||0;
+ const unlocked=db.achievements.filter(a=>!knownAchievements.has(a.key));
+ try{localStorage.setItem(KEY,JSON.stringify(db))}
+ catch(error){console.error('LEVEL save failed',error);toast('Не удалось сохранить данные на устройстве');return false}
+ const level=Math.floor(xp/100)+1,levelUp=level>Math.floor(lastSavedXP/100)+1;
+ const gained=xp-lastSavedXP;
+ resetRewardBaseline();
+ markLocalChange();render();
+ const message=[gained>0?'+'+gained+' XP':'',levelUp?'Уровень '+level:'',...unlocked.map(a=>'✦ '+a.title)].filter(Boolean).join(' · ');
+ if(!silent){userEditedSinceBoot=true;if(message)showReward(message)}
+ return true;
+}
+function resetRewardBaseline(){
+ lastSavedXP=Number(db.activityXP)||0;
+ knownAchievements=new Set((db.achievements||[]).map(a=>a.key));
+}
 function seedStarter(){
  if(db.starterApplied)return;
  const d=today();
@@ -440,23 +468,92 @@ function seedStarter(){
 
 function id(){return (globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,10)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function today(){return localDateKey(new Date())}
 function fmt(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n||0)+' ₽'}
-function toast(s){let e=document.getElementById('toast');e.textContent=s;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}
+let toastTimer,rewardTimer,modalOpener;
+function toast(message){
+ const el=document.getElementById('toast');
+ clearTimeout(toastTimer);el.textContent=message;el.classList.add('show');
+ toastTimer=setTimeout(()=>el.classList.remove('show'),2400);
+}
 
-let rewardSoundEnabled=localStorage.getItem('level-sound-enabled')!=='false';
-let rewardQueue=[],rewardShowing=false;
-function playLevelSound(kind){if(!rewardSoundEnabled)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const ctx=new C();const notes=kind==='achievement'?[523.25,659.25,783.99,1046.5]:kind==='levelup'?[392,523.25,659.25,783.99,1046.5]:[587.33,783.99];notes.forEach((hz,i)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=hz;gain.gain.setValueAtTime(.0001,ctx.currentTime+i*.105);gain.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+i*.105+.025);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+i*.105+.19);osc.connect(gain);gain.connect(ctx.destination);osc.start(ctx.currentTime+i*.105);osc.stop(ctx.currentTime+i*.105+.21)});setTimeout(()=>ctx.close(),1200)}catch(e){console.debug('Audio unavailable',e)}}
-function rewardHaptic(){try{if(typeof navigator!=='undefined'&&typeof navigator.vibrate==='function')navigator.vibrate(achievementHapticPattern)}catch(e){}}
-const achievementHapticPattern=[18,35,24];
-function showRewardPopup(item){rewardQueue.push(item);if(item.kind==='levelup'){const hero=document.querySelector('.heroMain');if(hero){hero.classList.remove('level-flash');void hero.offsetWidth;hero.classList.add('level-flash')}}if(!rewardShowing)nextRewardPopup()}
-function nextRewardPopup(){if(!rewardQueue.length){rewardShowing=false;return}rewardShowing=true;const item=rewardQueue.shift(),achievement=item.kind==='achievement',levelup=item.kind==='levelup';document.getElementById('rewardSymbol').textContent=levelup?'⬆':achievement?'✦':'✓';document.getElementById('rewardKicker').textContent=levelup?'НОВЫЙ УРОВЕНЬ':achievement?'НОВОЕ ДОСТИЖЕНИЕ':'КВЕСТ ЗАВЕРШЁН';document.getElementById('rewardTitle').textContent=item.title;document.getElementById('rewardDetail').textContent=item.detail||'Отличная работа. Продолжай в своём темпе.';document.getElementById('rewardXp').textContent=levelup?'Уровень '+item.level+' · '+(item.xp||0)+' XP':achievement?'Достижение открыто':'+'+(item.xp||10)+' XP';document.getElementById('soundToggle').textContent='Звук: '+(rewardSoundEnabled?'вкл.':'выкл.');document.getElementById('rewardBack').classList.add('show');rewardHaptic();playLevelSound(levelup?'levelup':achievement?'achievement':'quest')}
-function closeRewardPopup(){document.getElementById('rewardBack').classList.remove('show');setTimeout(nextRewardPopup,180)}
-function toggleRewardSound(){rewardSoundEnabled=!rewardSoundEnabled;localStorage.setItem('level-sound-enabled',String(rewardSoundEnabled));document.getElementById('soundToggle').textContent='Звук: '+(rewardSoundEnabled?'вкл.':'выкл.');if(rewardSoundEnabled)playLevelSound('achievement')}
-
-function showPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));const target=document.getElementById('page-'+p);if(!target)return;target.classList.add('active');const secondary=['campaign','analytics','strategy','habits','projects','finance','health','settings'];const active=p==='more'||secondary.includes(p)?'more':p;document.querySelectorAll('.nav button').forEach(e=>e.classList.toggle('active',e.dataset.page===active));window.scrollTo({top:0,behavior:'smooth'});render()}
-function modal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalBack').classList.add('show')}
-function closeModal(){document.getElementById('modalBack').classList.remove('show')}
+let rewardSoundEnabled=localStorage.getItem('level-sound-enabled')==='true';
+function playLevelSound(){
+ if(!rewardSoundEnabled||!navigator.userActivation?.isActive)return;
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  if(!Audio)return;
+  const ctx=new Audio(),osc=ctx.createOscillator(),gain=ctx.createGain(),start=ctx.currentTime;
+  osc.frequency.setValueAtTime(587.33,start);osc.frequency.setValueAtTime(783.99,start+.09);
+  gain.gain.setValueAtTime(.09,start);gain.gain.exponentialRampToValueAtTime(.001,start+.23);
+  osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(start+.24);
+  setTimeout(()=>ctx.close().catch(()=>{}),700);
+ }catch(error){console.debug('Audio unavailable',error)}
+}
+function toggleRewardSound(){
+ rewardSoundEnabled=!rewardSoundEnabled;
+ localStorage.setItem('level-sound-enabled',String(rewardSoundEnabled));
+ renderSoundPreference();
+ if(rewardSoundEnabled)playLevelSound();
+}
+function renderSoundPreference(){
+ const button=document.getElementById('soundToggle');
+ button.setAttribute('aria-pressed',String(rewardSoundEnabled));
+ button.textContent='Звук наград · '+(rewardSoundEnabled?'включён':'выключен');
+}
+function showReward(message){
+ const note=document.getElementById('rewardNote');
+ clearTimeout(rewardTimer);note.textContent=message;note.classList.add('show');
+ rewardTimer=setTimeout(()=>note.classList.remove('show'),5500);
+ playLevelSound();
+}
+function showPage(p){
+ const target=document.getElementById('page-'+p);
+ if(!target)return;
+ document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el===target));
+ const nav=[...document.querySelectorAll('.nav button')];
+ const active=nav.some(el=>el.dataset.page===p)?p:'more';
+ nav.forEach(el=>{
+  el.classList.toggle('active',el.dataset.page===active);
+  if(el.dataset.page===active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');
+ });
+ render();
+ const heading=target.querySelector('h1,h2');
+ if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true})}
+ window.scrollTo(0,0);
+}
+function modal(title,body){
+ const back=document.getElementById('modalBack');
+ if(!back.classList.contains('show'))modalOpener=document.activeElement;
+ document.getElementById('modalTitle').textContent=title;
+ const fields=document.getElementById('modalBody');fields.innerHTML=body;
+ fields.querySelectorAll('label:not([for])').forEach(label=>{
+  const field=label.nextElementSibling;
+  if(field?.matches('input[id],select[id],textarea[id]'))label.htmlFor=field.id;
+ });
+ back.classList.add('show');
+ document.body.classList.add('modal-open');
+ document.querySelector('.app').inert=true;document.querySelector('.nav').inert=true;
+ back.querySelector('.close').focus();
+}
+function closeModal(){
+ const back=document.getElementById('modalBack');
+ if(!back.classList.contains('show'))return;
+ back.classList.remove('show');
+ document.body.classList.remove('modal-open');
+ document.querySelector('.app').inert=false;document.querySelector('.nav').inert=false;
+ if(modalOpener?.isConnected)modalOpener.focus();
+}
+document.addEventListener('keydown',event=>{
+ const back=document.getElementById('modalBack');
+ if(!back.classList.contains('show'))return;
+ if(event.key==='Escape'){event.preventDefault();closeModal();return}
+ if(event.key!=='Tab')return;
+ const controls=[...back.querySelectorAll('button,input,select,textarea,a[href]')].filter(el=>!el.disabled&&el.getClientRects().length);
+ const first=controls[0],last=controls.at(-1);
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus()}
+ if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus()}
+});
 function openModal(type,ref){
 let b='';
 if(type==='task')b='<label>Название квеста</label><input class="field" id="fTitle" placeholder="Конкретный следующий шаг"><div class="formgrid"><div><label>Дата</label><input class="field" id="fDate" type="date" value="'+today()+'"></div><div><label>Время (если важно)</label><input class="field" id="fTime" type="time"></div></div><div><label>Приоритет</label><select class="field" id="fPriority"><option>Обычный</option><option>Высокий</option><option>Главный результат</option></select></div><label>Связать с целью</label><select class="field" id="fLink"><option value="">Без цели</option>'+db.goals.map(g=>'<option value="'+g.id+'">'+esc(g.title)+'</option>').join('')+'</select><label>Этап цепочки (необязательно)</label><select class="field" id="fMilestone"><option value="">Без конкретного этапа</option>'+db.goals.flatMap(g=>(g.milestones||[]).filter(m=>!m.done).map(m=>'<option value="'+g.id+'|'+m.id+'">'+esc(g.title+' → '+m.title)+'</option>')).join('')+'</select><button class="btn primary" onclick="addTask()">Добавить квест</button>';
@@ -473,7 +570,8 @@ if(type==='proof'){let s=db.skills.find(x=>x.id===ref);let prev=db.proofs.filter
 modal(({replaceTask:'Проверка замены квеста',task:'Новый квест',goal:'Новая долгосрочная цель',skill:'Новый навык',habit:'Новая привычка',project:'Новый проект',transaction:'Финансовая операция',proof:'Proof of Skill',meal:'Новый приём пищи',weight:'Новое измерение веса',healthProfile:'Параметры здоровья'})[type],b);
 }
 function ensureDailyTasks(){
- const d=today();if(db.dailyTemplateDate===d||new Date().getHours()<6)return;
+ const d=today(),dates=Array.isArray(db.dailyTemplateDates)?db.dailyTemplateDates:[];
+ if(db.dailyTemplateDate===d||dates.includes(d)||new Date().getHours()<6)return;
  const skillTask=(skillTitle,title,time,xp,priority='Обычный',difficulty='Средняя',duration='15–20 минут',proof='Выполнен измеримый результат задания.')=>{const skill=db.skills.find(x=>x.title===skillTitle);return {id:id(),title,date:d,time,priority,done:false,rewarded:false,skillId:skill?.id||null,skillXp:xp,difficulty,duration,proof}};
  const recurring=[
  skillTask('Физическая форма','10 отжиманий с контролем техники','07:00',15,'Главный результат','Средняя','5–10 минут','10 повторений без боли, с контролируемым движением.'),
@@ -486,7 +584,8 @@ function ensureDailyTasks(){
  skillTask('Финансовая грамотность','Записать расходы и пересчитать остаток бюджета','20:00',10,'Обычный','Лёгкая','10 минут','Расходы внесены, остаток бюджета пересчитан.')
  ];
  recurring.forEach(t=>db.tasks.push(t));
- db.dailyTemplateDate=d;localStorage.setItem(KEY,JSON.stringify(db));markLocalChange();
+ db.dailyTemplateDates=[...new Set([...dates,db.dailyTemplateDate,d].filter(Boolean))];
+ db.dailyTemplateDate=d;save({silent:true});
 }
 function val(x){return document.getElementById(x)?.value?.trim()||''}
 function addTask(){if(!val('fTitle'))return toast('Добавь название');let link=val('fMilestone').split('|');db.tasks.push({id:id(),title:val('fTitle'),date:val('fDate')||today(),time:val('fTime'),priority:val('fPriority'),goal:link.length===2?link[0]:val('fLink'),milestoneId:link.length===2?link[1]:'',done:false,rewarded:false});closeModal();if(save())toast('Квест добавлен в цепочку')}
@@ -495,7 +594,7 @@ function addSkill(){if(!val('fTitle'))return toast('Укажи навык');db.s
 function addHabit(){if(!val('fTitle'))return toast('Укажи привычку');db.habits.push({id:id(),title:val('fTitle'),freq:val('fFreq'),logs:[]});closeModal();if(save())toast('Привычка добавлена')}
 function addProject(){if(!val('fTitle'))return toast('Укажи проект');db.projects.push({id:id(),title:val('fTitle'),desc:val('fDesc'),goal:val('fLink'),done:false});closeModal();if(save())toast('Проект создан')}
 function addTransaction(){let n=Number(val('fAmount'));if(!Number.isFinite(n)||n<=0||n>1000000000000)return toast('Укажи корректную сумму');db.transactions.unshift({id:id(),type:val('fType'),amount:n,title:val('fTitle')||'Без описания',date:today()});closeModal();if(save())toast('Запись сохранена')}
-function addProof(sid){let title=val('fTitle'),desc=val('fDesc'),v=Number(val('fValue')),unit=val('fUnit');if(!title||!desc||!unit||!Number.isFinite(v))return toast('Заполни результат и доказательство');let p={id:id(),skill:sid,title,desc,value:v,unit,direction:val('fDirection')||'higher',type:val('fType'),date:today(),status:'pending'};db.proofs.unshift(p);closeModal();if(save())toast('Доказательство ожидает подтверждения')}
+function addProof(sid){let title=val('fTitle'),desc=val('fDesc'),v=Number(val('fValue')),unit=val('fUnit');if(!title||!desc||!unit||!val('fValue')||!Number.isFinite(v))return toast('Заполни результат и доказательство');let p={id:id(),skill:sid,title,desc,value:v,unit,direction:val('fDirection')||'higher',type:val('fType'),date:today(),status:'pending'};db.proofs.unshift(p);closeModal();if(save())toast('Доказательство ожидает подтверждения')}
 function approveProof(pid){let p=db.proofs.find(x=>x.id===pid);if(!p||p.status==='approved')return;let old=db.proofs.filter(x=>x.skill===p.skill&&x.status==='approved'&&x.title===p.title&&x.unit===p.unit&&(x.direction||'higher')===(p.direction||'higher'));let best=old.length?(p.direction==='lower'?Math.min(...old.map(x=>Number(x.value))):Math.max(...old.map(x=>Number(x.value)))):null;if(best!==null&&(p.direction==='lower'?Number(p.value)>=best:Number(p.value)<=best))return toast('Нужно улучшить прошлый результат');p.status='approved';p.xp=20;let s=db.skills.find(x=>x.id===p.skill);if(s)s.xp=(s.xp||0)+20;save();toast('Результат подтверждён · +20 XP навыку')}
 function showReplacementDecision(tid){
  const t=db.tasks.find(x=>x.id===tid),decision=document.getElementById('replacementDecision');if(!t?.replacementPending||!decision)return;
@@ -558,8 +657,41 @@ function rejectTaskReplacement(tid){
  const t=db.tasks.find(x=>x.id===tid);if(!t?.replacementPending)return toast('Нет ожидающей заявки.');
  delete t.replacementPending;t.replacementRejectedAt=new Date().toISOString();save();closeModal();toast('Исходный квест сохранён без изменений');
 }
-function toggleTask(tid){let t=db.tasks.find(x=>x.id===tid);if(!t)return;if(!t.done){if(t.boss){let evidence=prompt('Подтверди результат босса: что именно сделал и какой получен результат?');if(!evidence||evidence.trim().length<20){toast('Для босса нужно конкретное подтверждение (от 20 символов)');return}t.bossEvidence=evidence.trim();t.bossVerifiedAt=new Date().toISOString();let boss=db.weeklyBoss;if(boss&&boss.id===t.bossId){boss.done=true;boss.evidence=evidence.trim()}}const oldLevel=Math.floor((Number(db.activityXP)||0)/100)+1;const previousAchievements=new Set((db.achievements||[]).map(a=>a.key));t.done=true;if(t.milestoneId){let g=db.goals.find(x=>x.id===t.goal),m=g?.milestones?.find(x=>x.id===t.milestoneId);if(m&&!m.done){m.done=true;g.progress=Math.round(g.milestones.filter(x=>x.done).length/g.milestones.length*100)}}if(!t.rewarded){t.rewarded=true;db.activityXP=(db.activityXP||0)+10+(t.boss?30:0);if(t.skillId&&t.skillXp){let skill=db.skills.find(x=>x.id===t.skillId);if(skill)skill.xp=(skill.xp||0)+Number(t.skillXp)}}const newLevel=Math.floor((Number(db.activityXP)||0)/100)+1;updateStreak();refreshAchievements();const newly=(db.achievements||[]).filter(a=>!previousAchievements.has(a.key));if(save()){showRewardPopup({kind:'quest',title:t.title,detail:'Квест завершён',xp:t.rewarded?(10+(t.boss?30:0)):0});if(newLevel>oldLevel)showRewardPopup({kind:'levelup',title:'Уровень повышен!',detail:'Ты достиг нового уровня. Продолжай превращать усилия в реальные результаты.',level:newLevel,xp:Number(db.activityXP)||0});newly.forEach((a,i)=>setTimeout(()=>showRewardPopup({kind:'achievement',title:a.title,detail:a.desc,xp:0}),650+(i*450)))}}else{if(t.boss)return toast('Завершённого босса нельзя отменить: сохрани подтверждённый результат.');t.done=false;save()}}
+function toggleTask(tid){
+ const task=db.tasks.find(t=>t.id===tid);
+ if(!task||task.replaced)return;
+ if(task.done){
+  if(task.boss)return toast('Завершённого босса нельзя отменить.');
+  task.done=false;
+  if(save())toast('Квест возвращён в план');
+  return;
+ }
+ if(task.boss){
+  const evidence=prompt('Подтверди результат босса: что именно сделал и какой получен результат?')?.trim();
+  if(!evidence||evidence.length<20)return toast('Для босса нужно подтверждение от 20 символов');
+  task.bossEvidence=evidence;task.bossVerifiedAt=new Date().toISOString();
+  if(db.weeklyBoss?.id===task.bossId){db.weeklyBoss.done=true;db.weeklyBoss.evidence=evidence}
+ }
+ task.done=true;
+ const goal=db.goals.find(g=>g.id===task.goal),milestone=goal?.milestones?.find(m=>m.id===task.milestoneId);
+ if(milestone&&!milestone.done){
+  milestone.done=true;
+  goal.progress=Math.round(goal.milestones.filter(m=>m.done).length/goal.milestones.length*100);
+ }
+ const earned=!task.rewarded;
+ if(earned){
+  task.rewarded=true;task.rewardedOn=today();
+  db.activityXP=(Number(db.activityXP)||0)+(task.boss?40:10);
+  const skill=db.skills.find(s=>s.id===task.skillId);
+  if(skill&&task.skillXp)skill.xp=(skill.xp||0)+Number(task.skillXp);
+ }
+ updateStreak();
+ if(save()&&!earned)toast('Квест завершён · XP уже получен');
+}
 function updateStreak(){let d=today();if(db.pauseDates.includes(d))return;let completed=db.tasks.some(t=>t.date===d&&t.done)||db.habits.some(h=>h.logs.includes(d));if(completed&&db.lastActive!==d){let y=new Date();y.setDate(y.getDate()-1);let yd=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');while(db.pauseDates.includes(yd)){y.setDate(y.getDate()-1);yd=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0')}db.streak=db.lastActive===yd?(db.streak||0)+1:1;db.lastActive=d}}
+function earnedHabitDates(habit){
+ return [...new Set([...(Array.isArray(habit.xpDates)?habit.xpDates:[]),...(Array.isArray(habit.logs)?habit.logs:[])].filter(date=>typeof date==='string'))];
+}
 function toggleHabit(hid){let h=db.habits.find(x=>x.id===hid);if(!h)return;let d=today();if(h.logs.includes(d)){h.logs=h.logs.filter(x=>x!==d)}else{h.logs.push(d);h.xpDates=h.xpDates||[];if(!h.xpDates.includes(d)){h.xpDates.push(d);db.activityXP=(db.activityXP||0)+5}updateStreak()}save()}
 function togglePause(){let d=today();if(db.pauseDates.includes(d))db.pauseDates=db.pauseDates.filter(x=>x!==d);else db.pauseDates.push(d);save()}
 function deleteItem(arr,ref){if(confirm('Удалить эту запись?')){db[arr]=db[arr].filter(x=>x.id!==ref);save()}}
@@ -570,14 +702,40 @@ function skillLevel(xp){return Math.floor(Math.sqrt((xp||0)/100))+1}
 function taskReward(t){return t.skillXp?'+10 XP · +'+Number(t.skillXp)+' навыку':'+10 XP'}
 function taskMeta(t){let parts=[];if(t.time)parts.push('🕒 '+esc(t.time));parts.push('Сложность: '+esc(t.difficulty||'Обычная'));parts.push('Время: '+esc(t.duration||'10–20 мин'));parts.push('Награда: '+taskReward(t));let g=db.goals.find(x=>x.id===t.goal),m=g?.milestones?.find(x=>x.id===t.milestoneId);return '<div class="taskmeta">'+parts.map(x=>'<span>'+x+'</span>').join('')+'</div>'+(m?'<div class="taskproof">Этап кампании: '+esc(m.title)+'</div>':'')+(t.proof?'<div class="taskproof">Готово, когда: '+esc(t.proof)+'</div>':'')}
 function goalCardHtml(g){const ms=Array.isArray(g.milestones)?g.milestones:[],done=ms.filter(m=>m.done).length,p=ms.length?Math.round(done/ms.length*100):Math.max(0,Math.min(100,Number(g.progress)||0));return '<div class="item"><div class="itemtop"><div><h3>'+esc(g.title)+'</h3><p>'+esc(g.desc||'')+'</p></div><button class="link" onclick="deleteItem(\'goals\',\''+g.id+'\')">×</button></div><div class="progress"><span style="width:'+p+'%"></span></div><div class="itemfoot"><span>'+p+'% · '+done+'/'+ms.length+' действий'+(g.date?' · до '+esc(g.date):'')+'</span></div><div class="eyebrow" style="margin:13px 0 2px">План достижения цели</div>'+ms.map((m,i)=>{const t=db.tasks.find(x=>x.goal===g.id&&x.milestoneId===m.id&&!x.replaced),state=m.done?'Выполнено':t?'Квест в плане: '+t.date:'Следующий шаг добавится автоматически';return '<div class="goal-step"><button class="check '+(m.done?'done':'')+'" onclick="toggleMilestone(\''+g.id+'\',\''+m.id+'\')">'+(m.done?'✓':'')+'</button><div class="goal-step-main"><div class="goal-step-title">'+(i+1)+'. '+esc(m.title)+'</div>'+(m.detail?'<div class="goal-step-detail">'+esc(m.detail)+'</div>':'')+(m.proof?'<div class="goal-step-proof">Готово, когда: '+esc(m.proof)+'</div>':'')+'<div class="goal-step-task">'+state+(m.minutes?' · '+m.minutes+' мин.':'')+'</div></div></div>'}).join('')+'</div>'}
+function completeTodayTask(button){
+ const taskId=button.dataset.todayTask;
+ toggleTask(taskId);
+ const buttons=[...document.querySelectorAll('[data-today-task]')];
+ (buttons.find(el=>el.dataset.todayTask===taskId)||buttons[0])?.focus();
+}
+function renderToday(date,tasks,done){
+ const progress=document.getElementById('dayProgress');
+ progress.max=tasks.length||1;progress.value=done;
+ const paused=db.pauseDates.includes(date);
+ document.getElementById('focusSub').textContent=paused?'Пауза включена':!tasks.length?'На сегодня ещё нет квестов':done===tasks.length?'План дня выполнен':'Выполнено '+done+' из '+tasks.length;
+ document.getElementById('statTasks').textContent=done+'/'+tasks.length;
+ const dayXP=db.tasks.filter(t=>(t.rewardedOn||(t.rewarded?t.date:null))===date).reduce((sum,t)=>sum+(t.boss?40:10),0)
+  +5*db.habits.filter(h=>h.xpDates?.includes(date)).length;
+ document.getElementById('dayXP').textContent=dayXP;
+ let previous=new Date();
+ do{previous.setDate(previous.getDate()-1)}while(db.pauseDates.includes(localDateKey(previous)));
+ document.getElementById('statStreak').textContent=db.lastActive===date||db.lastActive===localDateKey(previous)?db.streak||0:0;
+ const priority={'Главный результат':2,'Высокий':1};
+ const order=(a,b)=>(priority[b.priority]||0)-(priority[a.priority]||0)||(a.time||'24:00').localeCompare(b.time||'24:00');
+ const remaining=tasks.filter(t=>!t.done).sort(order);
+ const shown=(remaining.length?remaining:tasks.slice().sort(order)).slice(0,3);
+ document.getElementById('homeTasks').innerHTML=shown.map(t=>`<div class="today-task">
+  <button class="check ${t.done?'done':''}" type="button" aria-pressed="${t.done}" aria-label="${esc(t.title)}" onclick="completeTodayTask(this)" data-today-task="${esc(t.id)}">${t.done?'✓':''}</button>
+  <div class="today-task-copy"><strong>${esc(t.title)}</strong><small>${[t.time,t.priority,t.rewarded?'XP получен':'+'+(t.boss?40:10)+' XP'].filter(Boolean).map(esc).join(' · ')}</small>
+  ${!t.done&&!t.replacementOf?`<button class="replace-action" onclick="requestTaskReplacement('${t.id}')">Заменить квест</button>`:''}</div>
+ </div>`).join('')||'<div class="empty">Добавь квест, чтобы начать план дня.</div>';
+}
 function render(){
-let d=today(),tasks=db.tasks.filter(x=>x.date===d),done=tasks.filter(x=>x.done).length,approved=db.proofs.filter(p=>p.status==='approved'),activity=(db.activityXP||0),xp=activity,level=Math.floor(xp/100)+1,within=xp%100;
+let d=today(),tasks=db.tasks.filter(x=>x.date===d&&!x.replaced),done=tasks.filter(x=>x.done).length,approved=db.proofs.filter(p=>p.status==='approved'),activity=(db.activityXP||0),xp=activity,level=Math.floor(xp/100)+1,within=xp%100;
 document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
 document.getElementById('heroLevel').innerHTML=level+' <small>LVL</small>';document.getElementById('xpLabel').textContent=within+' / 100 XP';document.getElementById('heroProgress').style.width=within+'%';document.getElementById('rankLabel').textContent=level<5?'Новичок · формируешь фундамент':level<10?'Исследователь · набираешь темп':level<20?'Практик · превращаешь усилия в результат':'Мастер пути · стабильно растёшь';
-document.getElementById('focusCount').textContent=tasks.length?(tasks.length-done)+' осталось':'План формируется';document.getElementById('focusSub').textContent=tasks.length?'Сегодня закрыто '+done+' из '+tasks.length:'Автоплан добавит первые действия.';
-document.getElementById('statTasks').textContent=tasks.length?done+'/'+tasks.length:'—';document.getElementById('taskRate').textContent=tasks.length?Math.round(done/tasks.length*100)+'%':'нет заданий';document.getElementById('statGoals').textContent=db.goals.length;document.getElementById('statSkills').textContent=db.skills.length;let streakShown=db.streak||0;if(db.lastActive){let z=new Date();z.setDate(z.getDate()-1);let yd=z.getFullYear()+'-'+String(z.getMonth()+1).padStart(2,'0')+'-'+String(z.getDate()).padStart(2,'0');if(db.lastActive!==d&&db.lastActive!==yd&&!db.pauseDates.includes(d))streakShown=0}document.getElementById('statStreak').textContent=streakShown;
-let taskHTML=tasks.length?tasks.filter(t=>!t.replaced).slice().sort((a,b)=>(a.time||'').localeCompare(b.time||'')).map(t=>'<div class="task"><button class="check '+(t.done?'done':'')+'" onclick="toggleTask(\''+t.id+'\')">'+(t.done?'✓':'')+'</button><div class="tasktext '+(t.done?'done':'')+'"><div>'+esc(t.title)+'</div>'+taskMeta(t)+(t.replaced?'<small class="muted">Заменено</small>':'')+(!t.done&&!t.replaced&&!t.replacementOf?'<button class="replace-action" onclick="requestTaskReplacement(\''+t.id+'\')">↻ Заменить задание</button>':'')+(t.replacementApproved?'<small class="muted">Замена прошла проверку</small>':'')+'</div><span class="tag">'+taskReward(t)+'</span></div>').join(''):'<div class="empty">План пока пуст. Добавь один важный шаг.</div>';document.getElementById('homeTasks').innerHTML=taskHTML;
-document.getElementById('allTasks').innerHTML=db.tasks.length?db.tasks.slice().sort((a,b)=>(a.date+' '+(a.time||'')).localeCompare(b.date+' '+(b.time||''))).map(t=>'<div class="task"><button class="check '+(t.done?'done':'')+'" onclick="toggleTask(\''+t.id+'\')">'+(t.done?'✓':'')+'</button><div class="tasktext '+(t.done?'done':'')+'"><div>'+esc(t.title)+'</div>'+taskMeta(t)+(t.replaced?'<small class="muted">Заменено · причина сохранена в истории</small>':'')+(t.replacementApproved?'<small class="muted">Замена прошла проверку</small>':'')+(t.rewarded?'<small class="muted">Награда уже получена</small>':'')+(!t.done&&!t.replaced?'<button class="replace-action" onclick="requestTaskReplacement(\''+t.id+'\')">↻ Заменить задание</button>':'')+'</div><button class="link" onclick="deleteItem(\'tasks\',\''+t.id+'\')">×</button></div>').join(''):'<div class="empty">Пока нет квестов.</div>';
+renderToday(d,tasks,done);
+document.getElementById('allTasks').innerHTML=db.tasks.length?db.tasks.slice().sort((a,b)=>(a.date+' '+(a.time||'')).localeCompare(b.date+' '+(b.time||''))).map(t=>'<div class="task"><button class="check '+(t.done?'done':'')+'" aria-label="'+esc(t.title)+'" aria-pressed="'+!!t.done+'" '+(t.replaced?'disabled ':'')+'onclick="toggleTask(\''+t.id+'\')">'+(t.done?'✓':'')+'</button><div class="tasktext '+(t.done?'done':'')+'"><div>'+esc(t.title)+'</div>'+taskMeta(t)+(t.replaced?'<small class="muted">Заменено · причина сохранена в истории</small>':'')+(t.replacementApproved?'<small class="muted">Замена прошла проверку</small>':'')+(t.rewarded?'<small class="muted">Награда уже получена</small>':'')+(!t.done&&!t.replaced?'<button class="replace-action" onclick="requestTaskReplacement(\''+t.id+'\')">↻ Заменить задание</button>':'')+'</div><button class="link" onclick="deleteItem(\'tasks\',\''+t.id+'\')">×</button></div>').join(''):'<div class="empty">Пока нет квестов.</div>';
 document.getElementById('homeGoals').innerHTML=db.goals.slice(0,3).map(g=>'<div class="task"><div class="tasktext"><strong>'+esc(g.title)+'</strong><div class="progress"><span style="width:'+g.progress+'%"></span></div></div><small class="muted">'+g.progress+'%</small></div>').join('')||'<div class="empty">Добавь долгосрочную цель.</div>';
  document.getElementById('goalCards').innerHTML=db.goals.map(goalCardHtml).join('')||'<div class="empty">Добавь одну большую цель.</div>';
 document.getElementById('charLevel').textContent='Уровень '+level;document.getElementById('charAvatar').textContent=level>=20?'♛':level>=10?'✹':level>=5?'⚔':'✦';document.getElementById('charRank').textContent=level<5?'Новичок · начало пути':level<10?'Исследователь · набираешь силу':level<20?'Практик · уверенный рост':'Мастер · высокий уровень';document.getElementById('charProgress').style.width=within+'%';document.getElementById('charProgressLabel').textContent=within+' / 100 XP до следующего уровня';document.getElementById('totalXP').textContent=xp;document.getElementById('approvedCount').textContent=approved.length;
@@ -617,8 +775,17 @@ function renderAnalytics(){
  let inc=db.transactions.filter(x=>x.type==='in').reduce((s,x)=>s+Number(x.amount),0),out=db.transactions.filter(x=>x.type==='out').reduce((s,x)=>s+Number(x.amount),0);document.getElementById('realMetrics').innerHTML='<div class="moneyrow"><span>Фактические доходы (все записи)</span><strong>'+fmt(inc)+'</strong></div><div class="moneyrow"><span>Расходы</span><strong>'+fmt(out)+'</strong></div><div class="moneyrow"><span>Чистый денежный результат</span><strong>'+fmt(inc-out)+'</strong></div><div class="moneyrow"><span>Завершённые проекты</span><strong>'+db.projects.filter(p=>p.done).length+' / '+db.projects.length+'</strong></div><p class="sub">Показатели строятся только по записям, которые ты внёс в LEVEL; это не автоматическая проверка банковских поступлений.</p>';
  let cats=[['Сила',['Физическая форма']],['Интеллект',['Интеллект','Аналитика']],['Дисциплина',['Другое','Дисциплина']],['Коммуникация',['Коммуникация','Карьера']],['Предпринимательство',['Финансы']]];document.getElementById('attributeCards').innerHTML=cats.map(([name,keys])=>{let xp=db.skills.filter(s=>keys.some(k=>(s.cat||'').toLowerCase().includes(k.toLowerCase())||(s.title||'').toLowerCase().includes(k.toLowerCase()))).reduce((n,s)=>n+(s.xp||0),0);return '<div class="item"><h3>'+name+'</h3><div class="big">'+(Math.floor(Math.sqrt(xp/100))+1)+'</div><p>'+xp+' XP связанных навыков</p></div>'}).join('');
 }
-function refreshAchievements(){let unlocked=new Set((db.achievements||[]).map(a=>a.key)),candidates=[['first_quest','Первый шаг','Заверши первый квест',db.tasks.some(t=>t.done)],['ten_quests','В движении','Заверши 10 квестов',db.tasks.filter(t=>t.done&&!t.replaced).length>=10],['first_proof','Доказательство мастерства','Подтверди первый навык',db.proofs.some(p=>p.status==='approved')],['first_sale','Первая выручка','Зафиксируй первый доход',db.transactions.some(t=>t.type==='in'&&t.amount>0)],['first_project','Создатель','Заверши первый проект',db.projects.some(p=>p.done)],['week_streak','Неделя усилий','Выполни квесты в 7 разных дней',new Set(db.tasks.filter(t=>t.done).map(t=>t.date)).size>=7],['boss_slayer','Победитель босса','Заверши испытание босса с подтверждением',(db.weeklyBoss?.done||false)]];db.achievements=db.achievements||[];candidates.forEach(([key,title,desc,ok])=>{if(ok&&!unlocked.has(key))db.achievements.push({key,title,desc,at:today()})})}
-function renderAchievements(){let el=document.getElementById('achievementCards');if(!el)return;refreshAchievements();el.innerHTML=(db.achievements||[]).map(a=>'<div class="item"><div class="itemtop"><div><h3>✦ '+esc(a.title)+'</h3><p>'+esc(a.desc)+'</p></div><span class="tag">Открыто</span></div><p>Получено: '+esc(a.at)+'</p></div>').join('')||'<div class="empty">Достижения откроются после первых подтверждённых результатов.</div>'}
+function refreshAchievements(snapshot=db){
+ const achievements=Array.isArray(snapshot.achievements)?snapshot.achievements:[];
+ const unlocked=new Set(achievements.map(a=>a.key));
+ const candidates=[['first_quest','Первый шаг','Заверши первый квест',snapshot.tasks.some(t=>t.done)],['ten_quests','В движении','Заверши 10 квестов',snapshot.tasks.filter(t=>t.done&&!t.replaced).length>=10],['first_proof','Доказательство мастерства','Подтверди первый навык',snapshot.proofs.some(p=>p.status==='approved')],['first_sale','Первая выручка','Зафиксируй первый доход',snapshot.transactions.some(t=>t.type==='in'&&t.amount>0)],['first_project','Создатель','Заверши первый проект',snapshot.projects.some(p=>p.done)],['week_streak','Неделя усилий','Выполни квесты в 7 разных дней',new Set(snapshot.tasks.filter(t=>t.done).map(t=>t.date)).size>=7],['boss_slayer','Победитель босса','Заверши испытание босса с подтверждением',(snapshot.weeklyBoss?.done||false)]];
+ for(const [key,title,desc,earned] of candidates){
+  if(earned&&!unlocked.has(key))achievements.push({key,title,desc,at:today()});
+ }
+ snapshot.achievements=achievements;
+}
+
+function renderAchievements(){let el=document.getElementById('achievementCards');if(!el)return;document.getElementById('homeAchievements').innerHTML=(db.achievements||[]).slice(-3).reverse().map(a=>'<div class="achievement-preview">✦ '+esc(a.title)+'</div>').join('')||'<div class="empty">Первое достижение появится после выполненного квеста или другого результата.</div>';el.innerHTML=(db.achievements||[]).map(a=>'<div class="item"><div class="itemtop"><div><h3>✦ '+esc(a.title)+'</h3><p>'+esc(a.desc)+'</p></div><span class="tag">Открыто</span></div><p>Получено: '+esc(a.at)+'</p></div>').join('')||'<div class="empty">Достижения откроются после первых подтверждённых результатов.</div>'}
 
 function addMeal(){const title=val('fMealTitle');if(!title)return toast('Напиши, что ты ел');const now=new Date();db.health=db.health||{heightCm:185,weightKg:70,meals:[],weightLogs:[]};db.health.meals=db.health.meals||[];db.health.meals.unshift({id:id(),title,type:val('fMealType')||'Приём пищи',desc:val('fMealDesc'),date:today(),time:now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});closeModal();if(save())toast('Приём пищи сохранён')}
 function addWeight(){const n=Number(val('fWeight'));if(!Number.isFinite(n)||n<20||n>400)return toast('Проверь значение веса');db.health=db.health||{heightCm:185,weightKg:70,meals:[],weightLogs:[]};db.health.weightLogs=db.health.weightLogs||[];db.health.weightKg=n;db.health.weightLogs.unshift({id:id(),weightKg:n,date:today(),note:val('fWeightNote')});closeModal();if(save())toast('Измерение сохранено')}
@@ -648,10 +815,10 @@ function importData(e){
    const source=JSON.parse(reader.result);
    if(!source||typeof source!=='object'||Array.isArray(source)||!Array.isArray(source.tasks)||!Array.isArray(source.goals))throw new Error('invalid backup');
    const healthSource=source.health&&typeof source.health==='object'&&!Array.isArray(source.health)?source.health:{};
-   const importedTasks=normalizeImportedRecords(source.tasks).map(task=>({...task,done:!!task.done,rewarded:!!task.rewarded}));
+   const importedTasks=normalizeImportedRecords(source.tasks).map(task=>({...task,done:!!task.done,rewarded:!!(task.rewarded||task.done)}));
    const importedGoals=normalizeImportedRecords(source.goals).map(goal=>({...goal,progress:Number.isFinite(Number(goal.progress))?Math.max(0,Math.min(100,Number(goal.progress))):0,milestones:normalizeImportedRecords(goal.milestones).map(m=>({...m,done:!!m.done}))}));
    const importedSkills=normalizeImportedRecords(source.skills).map(skill=>({...skill,xp:Number.isFinite(Number(skill.xp))?Math.max(0,Number(skill.xp)):0}));
-   const importedHabits=normalizeImportedRecords(source.habits).map(habit=>({...habit,logs:Array.isArray(habit.logs)?habit.logs.filter(x=>typeof x==='string'):[],xpDates:Array.isArray(habit.xpDates)?habit.xpDates.filter(x=>typeof x==='string'):[]}));
+   const importedHabits=normalizeImportedRecords(source.habits).map(habit=>({...habit,logs:Array.isArray(habit.logs)?habit.logs.filter(x=>typeof x==='string'):[],xpDates:earnedHabitDates(habit)}));
    const importedHealth={heightCm:185,weightKg:70,meals:[],weightLogs:[],...healthSource};
    importedHealth.meals=normalizeImportedRecords(healthSource.meals);
    importedHealth.weightLogs=normalizeImportedRecords(healthSource.weightLogs);
@@ -674,7 +841,8 @@ function importData(e){
    if(!Number.isFinite(Number(db.health.heightCm))||db.health.heightCm<100||db.health.heightCm>250)db.health.heightCm=185;
    if(!Number.isFinite(Number(db.health.weightKg))||db.health.weightKg<20||db.health.weightKg>400)db.health.weightKg=70;
    if(!Number.isFinite(Number(db.streak))||db.streak<0)db.streak=0;
-   if(save())toast('Резервная копия восстановлена');
+   userEditedSinceBoot=true;
+   if(save({silent:true}))toast('Резервная копия восстановлена');
   }catch(error){
    console.error('LEVEL import failed',error);
    toast('Не удалось импортировать: проверь файл резервной копии');
@@ -716,50 +884,68 @@ function scheduleCloudSync(){if(!syncUser||!supabaseClient||authSetupMode)return
 function normalizeCloudPayload(payload){
  const base=fresh(),x=payload&&typeof payload==='object'?payload:{};
  return {...base,...x,
-  tasks:Array.isArray(x.tasks)?x.tasks:[],goals:Array.isArray(x.goals)?x.goals:[],
+  tasks:Array.isArray(x.tasks)?x.tasks.map(t=>({...t,rewarded:!!(t.rewarded||t.done)})):[],
+  activityXP:x.activityXP??(Array.isArray(x.tasks)?x.tasks.filter(t=>t.done).length*10:0),
+  goals:Array.isArray(x.goals)?x.goals.map(g=>({...g,milestones:g.milestones||[]})):[],
   skills:Array.isArray(x.skills)?x.skills:[],projects:Array.isArray(x.projects)?x.projects:[],
-  transactions:Array.isArray(x.transactions)?x.transactions:[],proofs:Array.isArray(x.proofs)?x.proofs:[],
-  habits:Array.isArray(x.habits)?x.habits:[],pauseDates:Array.isArray(x.pauseDates)?x.pauseDates:[],
+  transactions:Array.isArray(x.transactions)?x.transactions:[],proofs:Array.isArray(x.proofs)?x.proofs.map(p=>({...p,status:p.status||'approved'})):[],
+  habits:Array.isArray(x.habits)?x.habits.map(h=>({...h,xpDates:earnedHabitDates(h)})):[],pauseDates:Array.isArray(x.pauseDates)?x.pauseDates:[],
   health:{...base.health,...(x.health||{}),meals:Array.isArray(x.health?.meals)?x.health.meals:[],weightLogs:Array.isArray(x.health?.weightLogs)?x.health.weightLogs:[]}
  }
 }
-async function readCloudSnapshot(){
- const {data,error}=await supabaseClient.from('level_snapshots').select('payload,updated_at').eq('user_id',syncUser.id).maybeSingle();
+async function readCloudSnapshot(accountId=syncUser.id){
+ const {data,error}=await supabaseClient.from('level_snapshots').select('payload,updated_at').eq('user_id',accountId).maybeSingle();
  if(error)throw error;return data;
 }
-async function uploadLocalSnapshot(){
- const metaAtStart=readSyncMeta(),localModifiedAt=metaAtStart.localModifiedAt||new Date().toISOString();
- const localRevision=metaAtStart.localRevision||0,snapshot=JSON.parse(JSON.stringify(db));
- const {data,error}=await supabaseClient.from('level_snapshots').upsert({user_id:syncUser.id,payload:snapshot,schema_version:1},{onConflict:'user_id'}).select('updated_at').single();
- if(error)throw error;
+async function uploadLocalSnapshot(remote,accountId){
+ const metaAtStart=readSyncMeta(),localRevision=metaAtStart.localRevision||0;
+ const table=supabaseClient.from('level_snapshots');
+ const snapshot={payload:JSON.parse(JSON.stringify(db)),schema_version:1};
+ const updatedAt=new Date(Math.max(Date.now(),Date.parse(remote?.updated_at)||0)+1).toISOString();
+ const query=remote
+  ?table.update({...snapshot,updated_at:updatedAt}).eq('user_id',accountId).eq('updated_at',remote.updated_at)
+  :table.insert({...snapshot,user_id:accountId});
+ const {data,error}=await query.select('updated_at').maybeSingle();
+ if(syncUser?.id!==accountId)return;
+ if(error&&error.code!=='23505')throw error;
+ if(!data){
+  const latest=await readCloudSnapshot(accountId);
+  if(syncUser?.id!==accountId)return;
+  if(latest)showSyncConflict(latest);
+  else setSyncStatus('Облачная копия изменилась. Проверь версии ещё раз.');
+  return;
+ }
  const latestMeta=readSyncMeta(),changedDuringUpload=(latestMeta.localRevision||0)>localRevision;
- writeSyncMeta({userId:syncUser.id,localModifiedAt:latestMeta.localModifiedAt||localModifiedAt,localRevision:latestMeta.localRevision||localRevision,syncedLocalRevision:localRevision,dirty:changedDuringUpload,lastSyncedAt:data.updated_at,remoteUpdatedAt:data.updated_at});
+ writeSyncMeta({userId:accountId,localModifiedAt:latestMeta.localModifiedAt,localRevision:latestMeta.localRevision||localRevision,syncedLocalRevision:localRevision,dirty:changedDuringUpload,lastSyncedAt:data.updated_at,remoteUpdatedAt:data.updated_at});
  hideSyncConflict();
  if(changedDuringUpload){setSyncStatus('Есть новые изменения. Отправляю их следом…');scheduleCloudSync()}
  else setSyncStatus('Синхронизировано · '+new Date(data.updated_at).toLocaleString('ru-RU'));
 }
 function downloadCloudSnapshot(row){
  if(!row||!row.payload)throw new Error('В облаке нет корректного снимка LEVEL');
- db=normalizeCloudPayload(row.payload);localStorage.setItem(KEY,JSON.stringify(db));render();
+ const next=normalizeCloudPayload(row.payload);
+ refreshAchievements(next);
+ localStorage.setItem(KEY,JSON.stringify(next));db=next;resetRewardBaseline();render();
  const meta=readSyncMeta(),revision=meta.localRevision||0;
  writeSyncMeta({userId:syncUser.id,localModifiedAt:row.updated_at,localRevision:revision,syncedLocalRevision:revision,dirty:false,lastSyncedAt:row.updated_at,remoteUpdatedAt:row.updated_at});
  hideSyncConflict();setSyncStatus('Загружена актуальная облачная версия · '+new Date(row.updated_at).toLocaleString('ru-RU'));
 }
 async function syncNow(){
- if(!syncUser||!supabaseClient)return;
+ if(!syncUser||!supabaseClient||authSetupMode)return;
  if(syncBusy){syncQueued=true;return}
  if(syncConflictData){setSyncStatus('Сначала выбери, какую версию данных оставить.');return}
  if(!navigator.onLine){setSyncStatus('Нет интернета. Данные сохранены на устройстве и отправятся позже.');return}
  syncBusy=true;
  try{
   setSyncStatus('Проверяю версии данных…');
-  const row=await readCloudSnapshot(),meta=readSyncMeta();
+  const accountId=syncUser.id,row=await readCloudSnapshot(accountId),meta=readSyncMeta();
+  if(syncUser?.id!==accountId)return;
   if(!row){
-   await uploadLocalSnapshot();
+   await uploadLocalSnapshot(null,accountId);
   }else if(meta.userId!==syncUser.id||!meta.remoteUpdatedAt){
-   if(!HAD_LOCAL_DATA_AT_BOOT)downloadCloudSnapshot(row);else showSyncConflict(row);
+   if(!HAD_LOCAL_DATA_AT_BOOT&&!userEditedSinceBoot)downloadCloudSnapshot(row);else showSyncConflict(row);
   }else{
-   const localChanged=meta.dirty===true||(meta.localRevision||0)>(meta.syncedLocalRevision||0)||(!!meta.localModifiedAt&&Date.parse(meta.localModifiedAt)>Date.parse(meta.lastSyncedAt||0));
+   const localChanged=meta.dirty===true||(meta.localRevision||0)>(meta.syncedLocalRevision||0);
    const remoteChanged=row.updated_at!==meta.remoteUpdatedAt;
    if(localChanged&&remoteChanged)showSyncConflict(row);
    else if(remoteChanged){
@@ -767,7 +953,7 @@ async function syncNow(){
     if((latestMeta.localRevision||0)>(meta.localRevision||0))showSyncConflict(row);
     else downloadCloudSnapshot(row);
    }
-   else if(localChanged)await uploadLocalSnapshot();
+   else if(localChanged)await uploadLocalSnapshot(row,accountId);
    else setSyncStatus('Всё синхронизировано · '+new Date(row.updated_at).toLocaleString('ru-RU'));
   }
  }catch(error){
@@ -779,9 +965,24 @@ async function syncNow(){
  }
 }
 async function resolveSyncConflict(choice){
- if(!syncConflictData)return;
- try{if(choice==='cloud')downloadCloudSnapshot(syncConflictData);else await uploadLocalSnapshot()}
- catch(error){console.error(error);setSyncStatus('Не удалось разрешить конфликт: '+(error.message||'ошибка'))}
+ if(!syncConflictData||!syncUser||syncBusy||!navigator.onLine)return;
+ const accountId=syncUser.id,reviewed=syncConflictData,revision=readSyncMeta().localRevision;
+ syncBusy=true;
+ try{
+  const latest=await readCloudSnapshot(accountId);
+  if(syncUser?.id!==accountId)return;
+  if(!latest){hideSyncConflict();setSyncStatus('Облачная копия удалена. Запусти синхронизацию ещё раз.');return}
+  if(latest.updated_at!==reviewed.updated_at||readSyncMeta().localRevision!==revision){
+   showSyncConflict(latest);setSyncStatus('Одна из копий изменилась. Подтверди выбор ещё раз.');return;
+  }
+  if(choice==='cloud')downloadCloudSnapshot(latest);
+  if(choice==='local')await uploadLocalSnapshot(latest,accountId);
+ }catch(error){
+  console.error(error);setSyncStatus('Не удалось разрешить конфликт: '+(error.message||'ошибка'));
+ }finally{
+  syncBusy=false;
+  if(syncQueued){syncQueued=false;scheduleCloudSync()}
+ }
 }
 async function sendSyncLink(){
  if(!supabaseClient){setSyncStatus('Не загрузилась библиотека Supabase. Обнови страницу при наличии интернета.');return}
@@ -859,7 +1060,7 @@ async function initSyncForUser(user){
   setSyncStatus('Email подтверждён. Создай пароль ниже. Облачная синхронизация пока не запускается, поэтому локальные данные не будут перезаписаны.');
   return;
  }
- if(syncBusy)return;
+ if(syncBusy){syncQueued=true;return}
  try{await syncNow()}catch(error){console.error(error);setSyncStatus('Ошибка подключения: '+(error.message||'неизвестная ошибка'))}
 }
 function initCloudSync(){
@@ -876,21 +1077,36 @@ function initCloudSync(){
   else if(authSetupMode)setSyncStatus('Ссылка не подтвердилась. Возможно, она уже использована или истекла. Запроси новую ссылку и открой её один раз.');
   else setSyncStatus('Ожидает подключения. Данные пока хранятся локально.');
  });
- window.addEventListener('online',()=>{if(syncUser)syncNow()});
-}
+ }
+window.addEventListener('online',()=>{
+ if(supabaseClient){if(syncUser)syncNow();return}
+ const source=document.getElementById('supabaseLibrary');
+ const retry=document.createElement('script');
+ retry.src=source.src;retry.onload=()=>{if(!supabaseClient)initCloudSync();retry.remove()};
+ retry.onerror=()=>retry.remove();
+ document.head.append(retry);
+});
 
-seedStarter();ensureDailyTasks();
+seedStarter();
+const achievementCount=db.achievements?.length||0;
+refreshAchievements();
+if(db.achievements.length>achievementCount)save({silent:true});
+resetRewardBaseline();ensureDailyTasks();renderSoundPreference();
+let lastDayCheck='';
+function refreshDay(){
+ const date=today(),check=date+':'+(new Date().getHours()>=6);
+ if(check===lastDayCheck)return;
+ lastDayCheck=check;ensureDailyTasks();render();
+}
+window.addEventListener('pageshow',refreshDay);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay()});
+setInterval(()=>{if(!document.hidden)refreshDay()},30000);
 initCloudSync();document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});render();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http')){
- navigator.serviceWorker.addEventListener('controllerchange',()=>{
-  if(window.__levelControllerReloaded)return;
-  window.__levelControllerReloaded=true;
-  window.location.reload();
- });
  window.addEventListener('load',async()=>{
   try{
    const registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
-   await registration.update();
+   if(registration.active)await registration.update();
   }catch(error){console.warn('LEVEL update check failed',error)}
  });
 }

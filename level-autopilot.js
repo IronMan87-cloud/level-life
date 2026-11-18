@@ -102,11 +102,11 @@
   let changed=false;
   if(!wasDone&&t.done&&t.goal&&t.milestoneId){
    const g=db.goals.find(x=>x.id===t.goal),m=g?.milestones?.find(x=>x.id===t.milestoneId);
-   if(m&&!m.done){m.done=true;g.progress=Math.round(g.milestones.filter(x=>x.done).length/Math.max(1,g.milestones.length));changed=true}
+   if(m&&!m.done){m.done=true;g.progress=Math.round(g.milestones.filter(x=>x.done).length/Math.max(1,g.milestones.length)*100);changed=true}
    if(g&&ensureGoalTask(g,datePlus(t.date||today(),1)))changed=true;
   }else if(wasDone&&!t.done&&t.goal&&t.milestoneId){
    const g=db.goals.find(x=>x.id===t.goal),m=g?.milestones?.find(x=>x.id===t.milestoneId);
-   if(m&&m.done){m.done=false;g.progress=Math.round(g.milestones.filter(x=>x.done).length/Math.max(1,g.milestones.length));changed=true}
+   if(m&&m.done){m.done=false;g.progress=Math.round(g.milestones.filter(x=>x.done).length/Math.max(1,g.milestones.length)*100);changed=true}
   }
   if(changed){localStorage.setItem('level-life-v1',JSON.stringify(db));if(typeof markLocalChange==='function')markLocalChange();if(typeof render==='function')render()}
  };
