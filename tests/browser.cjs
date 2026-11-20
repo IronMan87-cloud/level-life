@@ -133,13 +133,19 @@ async function run() {
   await page.getByLabel('Скачанная резервная копия').setInputFiles(path);
   await page.getByLabel('Введите СБРОСИТЬ').fill('СБРОСИТЬ');
   await step(page,'Сбросить');
-  await page.getByRole('heading',{name:'Что для вас важно?'}).waitFor();
+  await page.getByRole('heading',{name:'Что для вас важно?'}).waitFor({timeout:5000}).catch(async error => { console.log(await page.locator('dialog').innerText()); throw error; });
   assert.equal(await saved(),null);
   await page.getByRole('button',{name:'Закрыть',exact:true}).click();
   await page.getByRole('heading',{name:'Обзор дня',level:1}).waitFor();
 
   const mobile = await browser.newContext({ ...devices['iPhone 13'], viewport:{width:320,height:700},serviceWorkers:'block' });
   await localApp(mobile);
+  if (!process.env.LEVEL_TEST_URL) {
+    await mobile.route('**/app/main.js',async route => {
+      await new Promise(resolve => setTimeout(resolve,550));
+      await route.fallback();
+    });
+  }
   const phone = await mobile.newPage();
   await phone.goto(origin);
   await phone.getByRole('heading',{name:'Обзор дня',level:1}).waitFor();
@@ -149,6 +155,19 @@ async function run() {
   assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
   await phone.getByRole('button',{name:'Переключить тему'}).click();
   await phone.screenshot({path:join(capture,version+'-mobile-dark.png'),fullPage:true});
+  await phone.evaluate(async () => {
+    const { fresh, day } = await import('./app/model.js');
+    const state = fresh();
+    state.tasks = Array.from({length:120},(_,index) => ({
+      id:'test-' + index, title:'Очень длинное название ' + 'безПробела'.repeat(14) + index,
+      date:day(state.settings.zone), xp:10, minutes:40, kind:'practice', history:[],
+    }));
+    localStorage.setItem('level-workspace-v2',JSON.stringify(state));
+  });
+  await phone.reload();
+  await phone.locator('.mobile-nav').getByRole('link',{name:'План'}).click();
+  assert.equal(await phone.locator('.task-row').count(),120);
+  assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
   assert.deepEqual(failures,[]);
   await browser.close();
   console.log(version + ': onboarding, goals, skill proof, learning materials, task replacement/completion, XP, persistence, review, reset, themes and 320px viewport passed');

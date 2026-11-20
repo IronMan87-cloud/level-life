@@ -744,6 +744,14 @@ const actions = {
   }),
   'project-done': id => commit(next => { next.projects.find(p => p.id === id).done = true; },'Проект завершён'),
   'reward-done': id => commit(next => { next.rewards.find(p => p.id === id).claimed = true; },'Награда получена'),
+  'health-settings': () => modal('Параметры тела',fieldGrid(
+    field('Рост, см',input('height',state.body.height,'type="number" min="20" max="275" step="0.1"')),
+    field('Вес, кг',input('weight',state.body.weight,'type="number" min="1" max="650" step="0.1"'))),
+    data => commit(next => { next.body = {height:int(data,'height') || null,weight:int(data,'weight') || null}; },'Параметры сохранены')),
+  budget: () => modal('Бюджет на семь дней',
+    fieldGrid(field('Лимит расходов',input('budget',state.finance.budget,'type="number" min="0.01" max="1000000000000" step="0.01"')),
+      field('Валюта',input('currency',state.finance.currency,'maxlength="12"'))) + field('Заметка',area('note',state.finance.note)),
+    data => commit(next => { next.finance = {budget:int(data,'budget') || null,currency:text(data,'currency'),note:text(data,'note')}; },'Бюджет сохранён')),
   auth: () => authForm(),
   'auth-link': () => authForm('link'),
   'sign-out': async () => {
@@ -858,4 +866,10 @@ if (client) {
   client.auth.getSession().then(({data}) => setAccount(data.session?.user)).catch(() => setAccount(null));
 } else {
   setAccount(null);
+}
+
+if (window.visualViewport) {
+  const fitDialog = () => document.documentElement.style.setProperty('--visual-height', window.visualViewport.height + 'px');
+  window.visualViewport.addEventListener('resize', fitDialog);
+  fitDialog();
 }

@@ -26,6 +26,7 @@ export function fresh(zone = timezone()) {
     goals: [], skills: [], tasks: [], materials: [], entries: [], reviews: [],
     ledger: [], habits: [], projects: [], transactions: [], health: [],
     rewards: [], pauseDates: [], legacyXP: 0,
+    finance: { budget: null, currency: '', note: '' }, body: { height: null, weight: null },
   };
 }
 
@@ -61,6 +62,8 @@ export function migrate(source) {
       ...list(source.health?.meals).map(r => ({ ...r, kind: 'Питание', note: r.desc || '' })),
       ...list(source.health?.weightLogs).map(r => ({ ...r, kind: 'Вес', title: r.weightKg + ' кг' })),
     ],
+    finance: { budget: Number(source.weeklyBudget) || null, currency: '', note: String(source.financeNote || '') },
+    body: { height: Number(source.health?.heightCm) || null, weight: Number(source.health?.weightKg) || null },
     legacy: source,
   };
 }

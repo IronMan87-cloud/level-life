@@ -63,11 +63,14 @@ function weekChart(state, today) {
 
 export function home(state, today) {
   const p = progress(state, today);
+  const localHour = Number(new Intl.DateTimeFormat('en-GB',{timeZone:state.settings.zone,hour:'numeric',hourCycle:'h23'}).format(new Date()));
+  const reminder = state.settings.notifications === 'in-app' && localHour >= 20 && !state.reviews.some(review => review.date === today);
   const tasks = state.tasks.filter(t => t.date === today);
   const done = tasks.filter(t => t.done).length;
   const percent = tasks.length ? Math.round(done / tasks.length * 100) : 0;
   const name = state.settings.name;
   return `<div class="page-head"><div><p class="eyebrow">${icon('sun', 15)} ${dateLabel(today, {weekday:'long', day:'numeric', month:'long'})}</p>${title(name ? 'Привет, ' + name : 'Обзор дня')}<p>Ваши задачи, цели и прогресс в одном месте.</p></div>${button('task', 'Новая задача', 'plus', 'primary')}</div>
+    ${reminder ? `<div class="panel pad reminder">${icon('journal',19)} <span>Подведите итоги дня, пока детали свежи.</span>${button('review-page','Открыть дневник','','quiet')}</div>` : ''}
     <div class="dashboard">
       <div class="dashboard-main">
         <section class="hero"><div class="hero-content"><div class="hero-label">${icon('growth', 17)} Личное развитие</div>
@@ -177,6 +180,8 @@ export function profile(state, today, pane, account) {
     ['bolt','100 XP',p.total >= 100], ['target','Цель достигнута',state.goals.some(g => g.milestones.length && g.milestones.every(m => m.done))],
     ['growth','Неделя активности',p.streak >= 7],
   ];
+  const weekly = state.transactions.filter(t => t.date >= shift(today,-6) && t.date <= today && ['expense','Расход'].includes(t.type))
+    .reduce((sum,t) => sum + Number(t.amount),0);
   const balance = state.transactions.reduce((sum, t) => sum + Number(t.amount) * (['expense','Расход'].includes(t.type) ? -1 : 1), 0);
   return `<div class="page-head"><div>${title('Профиль')}<p>${esc(account?.email || 'Данные на этом устройстве')}</p></div>${button(account ? 'sign-out' : 'auth', account ? 'Выйти' : 'Войти в аккаунт','user','secondary')}</div>
   ${tabs('Разделы профиля', pane, [['stats','Статистика'],['health','Здоровье'],['finance','Финансы'],['settings','Настройки']])}
@@ -187,9 +192,15 @@ export function profile(state, today, pane, account) {
     <section class="panel pad">${panelHead('Достижения')}
     ${achievements.map(([glyph,label,done]) => `<div class="list-row"><div class="achievement"><span class="stat-icon ${done ? 'blue' : ''}">${icon(glyph,18)}</span><strong>${label}</strong></div><span class="pill ${done ? 'success' : ''}">${done ? 'Открыто' : 'Впереди'}</span></div>`).join('')}</section></div>` : ''}
   ${pane === 'health' ? `<section class="panel pad">${panelHead('Журнал здоровья', button('health','Новая запись','plus','secondary'))}
+    <div class="button-row">${state.body.height ? `<span class="pill">Рост · ${esc(state.body.height)} см</span>` : ''}
+      ${state.body.weight ? `<span class="pill">Последний вес · ${esc(state.body.weight)} кг</span>` : ''}
+      ${button('health-settings','Параметры тела','','quiet')}</div>
     ${state.health.length ? [...state.health].reverse().map(r => `<div class="list-row"><span><strong>${esc(r.title)}</strong><small>${dateLabel(r.date)} · ${esc(r.kind)} · ${esc(r.note)}</small></span>${icon('heart',19)}</div>`).join('') : empty('heart','Записей пока нет','Добавляйте наблюдения о сне, питании, весе и самочувствии.')}</section>` : ''}
   ${pane === 'finance' ? `<section class="panel pad">${panelHead('Финансовый журнал', button('finance','Новая операция','plus','secondary'))}
-    <p>Баланс · <strong>${new Intl.NumberFormat('ru-RU').format(balance)}</strong></p>
+    <p>Баланс · <strong>${new Intl.NumberFormat('ru-RU').format(balance)} ${esc(state.finance.currency)}</strong></p>
+    <div class="button-row">${state.finance.budget ? `<span class="pill">За семь дней · ${new Intl.NumberFormat('ru-RU').format(weekly)} из ${esc(state.finance.budget)} ${esc(state.finance.currency)}</span>` : ''}
+      ${button('budget','Настроить бюджет','','quiet')}</div>
+    ${state.finance.note ? '<p>'+esc(state.finance.note)+'</p>' : ''}
     ${state.transactions.length ? [...state.transactions].reverse().map(r => `<div class="list-row"><span><strong>${esc(r.title)}</strong><small>${dateLabel(r.date)}</small></span><span class="pill">${['expense','Расход'].includes(r.type) ? '−' : '+'}${new Intl.NumberFormat('ru-RU').format(r.amount)}</span></div>`).join('') : empty('wallet','Операций пока нет','Фиксируйте доходы и расходы в одной выбранной валюте.')}</section>` : ''}
   ${pane === 'settings' ? `<div class="content-grid"><div class="stack">
     <section class="panel pad">${panelHead('Планирование')}${button('settings','Настроить развитие','settings','secondary')}<p>${esc(state.settings.minutes)} мин в день · ${esc(state.settings.zone)} · ${state.settings.nightly ? 'Ночной обзор включён' : 'Ручной запуск обзора'}</p></section>

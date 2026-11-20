@@ -207,3 +207,6 @@ input[type=checkbox] { display: inline-block; width: 20px; min-height: 20px; acc
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001s !important; transition-duration: .001s !important; }
 }
+dialog { max-height: calc(var(--visual-height, 100dvh) - max(28px, env(safe-area-inset-top)) - env(safe-area-inset-bottom)); }
+.reminder { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 15px; color: var(--accent); }
+.reminder span { flex: 1 1 160px; }

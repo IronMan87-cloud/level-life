@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/model.test.js",
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "test:database": "node tests/database.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.4.4"
   }
 }
