@@ -1,30 +1,38 @@
-const CACHE = 'level-shell-v40';
-const SHELL = [
- './', './index.html', './level-mobile.css', './level-advanced.js',
- './level-autopilot.js', './manifest.webmanifest', './icon.svg'
+const CACHE = 'level-shell-2.0.0';
+const scopes = [
+  'index.html', 'app/style.css', 'app/main.js', 'app/model.js', 'app/cloud.js',
+  'app/ui.js', 'app/views.js', 'assets/forest.webp', 'assets/supabase.js',
+  'assets/icon-192.png', 'assets/icon-512.png', 'manifest.webmanifest', 'icon.svg',
 ];
-const shellURLs = new Set(SHELL.map(path => new URL(path, self.registration.scope).href));
-const indexURL = new URL('./index.html', self.registration.scope).href;
+const absolute = relative => new URL(relative, self.registration.scope).href;
+const index = absolute('index.html');
+const assets = new Set(scopes.map(absolute));
 
 self.addEventListener('install', event => {
- event.waitUntil(caches.open(CACHE).then(cache =>
-  cache.addAll(SHELL.map(path => new Request(new URL(path, self.registration.scope), { cache: 'reload' })))
- ));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll([...assets].map(url => new Request(url, { cache: 'reload' })));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', event => {
- event.waitUntil(caches.keys().then(keys => Promise.all(keys
-  .filter(key => key.startsWith('level-shell-') && key !== CACHE)
-  .map(key => caches.delete(key)))).then(() => self.clients.claim()));
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key.startsWith('level-shell-') && key !== CACHE).map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener('fetch', event => {
- const request = event.request;
- if (request.method !== 'GET') return;
- const url = new URL(request.url);
- if (request.mode === 'navigate' && shellURLs.has(url.origin + url.pathname)) {
-  event.respondWith(caches.open(CACHE).then(async cache => (await cache.match(indexURL)) || fetch(request)));
- } else if (shellURLs.has(url.href)) {
-  event.respondWith(caches.open(CACHE).then(async cache => (await cache.match(request)) || fetch(request)));
- }
+  const { request } = event;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  const path = url.origin + url.pathname;
+  const navigation = request.mode === 'navigate' && [self.registration.scope, index].includes(path);
+  if (!navigation && !assets.has(path)) return;
+  event.respondWith(caches.open(CACHE).then(async cache => {
+    const cached = await cache.match(navigation ? index : path);
+    return cached || fetch(request);
+  }));
 });
