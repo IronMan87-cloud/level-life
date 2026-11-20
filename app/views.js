@@ -161,7 +161,7 @@ export function goals(state, pane) {
     ${pane === 'projects' ? button('project','Новый проект','plus','primary') : button('goal','Новая цель','plus','primary')}</div>
     ${tabs('Разделы целей', pane, [['goals','Цели и этапы'], ['projects','Проекты']])}
     ${pane === 'projects' ? `<section class="panel pad">${panelHead('Проекты')}
-      ${state.projects.length ? state.projects.map(p => `<div class="list-row"><span><strong>${esc(p.title)}</strong><small>${esc(p.desc)}</small></span>${p.done ? '<span class="pill success">Готово</span>' : button('project-done','Завершить','check','secondary',p.id)}</div>`).join('') : empty('flag','Проектов пока нет','Добавьте проект с конкретным итогом.')}</section>` :
+      ${state.projects.length ? state.projects.map(p => `<div class="list-row"><span><strong>${esc(p.title)}</strong><small>${esc(p.desc)}</small><small>${p.done ? 'Завершён' : 'В работе'} · ${dateLabel(p.deadline)}</small></span>${button('project-info','Открыть','flag','secondary',p.id)}</div>`).join('') : empty('flag','Проектов пока нет','Добавьте проект с конкретным итогом.')}</section>` :
     state.goals.length ? `<div class="card-grid">${state.goals.map(g => {
       const done = g.milestones.filter(m => m.done).length;
       return `<article class="panel pad"><div class="card-top"><span class="stat-icon blue">${icon('target',21)}</span><span class="pill">${dateLabel(g.deadline)}</span></div>

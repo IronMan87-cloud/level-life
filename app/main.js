@@ -506,10 +506,46 @@ function reviewForm() {
     }, 'Создать обзор');
 }
 
+function projectForm(id) {
+  const project = state.projects.find(p => p.id === id);
+  modal(project ? 'Настроить проект' : 'Новый проект',
+    field('Название',titleInput('title',project?.title)) + field('Результат проекта',area('desc',project?.desc)) +
+    fieldGrid(field('Цель',select('goal',related(state.goals,'Без цели'),project?.goal)),
+      field('Срок',input('deadline',project?.deadline,'type="date"')),
+      field('Бюджет',input('budget',project?.budget,'type="number" min="0" step="0.01" max="1000000000000"')),
+      field('План, минут',input('plannedMinutes',project?.plannedMinutes,'type="number" min="0" max="1000000"'))) +
+    field('Следующее действие',titleInput('nextStep',project?.nextStep,false)) +
+    field('Этапы, по одному на строку',area('steps',project?.steps?.map(step => step.title).join('\n'))),
+    data => commit(next => {
+      if (!text(data,'title')) throw new Error('Укажите название.');
+      const titles = [...new Set(text(data,'steps').split('\n').map(title => title.trim()).filter(Boolean))];
+      if (titles.length > 80 || titles.some(title => title.length > 180)) throw new Error('Укажите до 80 этапов по 180 символов.');
+      const steps = titles.map(title => project?.steps?.find(step => step.title === title) || { id:uid(),title,done:false });
+      const updated = { id:project?.id || uid(), title:text(data,'title'), desc:text(data,'desc'), goal:text(data,'goal'),
+        deadline:text(data,'deadline'), budget:int(data,'budget'), plannedMinutes:int(data,'plannedMinutes'), nextStep:text(data,'nextStep'),
+        steps, done:steps.length ? steps.every(step => step.done) : !!project?.done };
+      if (project) Object.assign(next.projects.find(p => p.id === id),updated);
+      else next.projects.push(updated);
+    },'Проект сохранён'));
+}
+
+function projectInfo(project) {
+  const { steps = [] } = project;
+  const goal = state.goals.find(item => item.id === project.goal);
+  modal(project.title,`<p class="preserve">${esc(project.desc)}</p>
+    <p>${goal ? esc(goal.title) + ' · ' : ''}${dateLabel(project.deadline)} · ${project.done ? 'Завершён' : 'В работе'}</p>
+    <p>План · ${esc(project.plannedMinutes || 0)} мин<br>Потрачено · ${esc(project.actualMinutes || 0)} мин
+      ${project.budget ? '<br>Бюджет · ' + esc(project.budget) : ''}</p>
+    ${project.nextStep ? '<p><b>Следующее действие</b> · ' + esc(project.nextStep) + '</p>' : ''}
+    <div class="milestones">${steps.map(step => `<button type="button" data-action="project-step" data-id="${attr(project.id + '/' + step.id)}" aria-pressed="${!!step.done}">${icon(step.done ? 'check' : 'circle',18)}${esc(step.title)}</button>`).join('')}</div>
+    <div class="button-row">${button('project','Редактировать','edit','secondary',project.id)}
+    ${button('project-log','Учесть время','clock','secondary',project.id)}
+    ${steps.length || project.done ? '' : button('project-done','Завершить','check','quiet',project.id)}</div>`);
+}
+
 function recordForm(kind) {
   const configs = {
     habit: ['Новая привычка', field('Периодичность',input('freq','Ежедневно','maxlength="100"')), next => next.habits],
-    project: ['Новый проект', field('Результат проекта',area('desc')) + field('Цель',select('goal',related(state.goals,'Без цели'))), next => next.projects],
     health: ['Запись о здоровье', field('Раздел',select('kind',options(['Сон','Самочувствие','Вес','Питание','Активность','Другое']),'Самочувствие')) + field('Наблюдение',area('note')), next => next.health],
     finance: ['Финансовая операция', field('Тип',select('type',[['expense','Расход'],['income','Доход']],'expense')) + field('Сумма',input('amount','','type="number" min="0.01" max="1000000000000" step="0.01" required')), next => next.transactions],
     reward: ['Личная награда',field('Условие получения',area('condition','','required')),next => next.rewards],
@@ -742,7 +778,27 @@ const actions = {
     habit.logs.push(today());
     return award(next,id + ':' + today(),5,today());
   }),
-  'project-done': id => commit(next => { next.projects.find(p => p.id === id).done = true; },'Проект завершён'),
+  project: projectForm,
+  'project-info': id => projectInfo(state.projects.find(p => p.id === id)),
+  'project-step': async id => {
+    const [projectId,stepId] = id.split('/');
+    await commit(next => {
+      const project = next.projects.find(p => p.id === projectId);
+      const step = project.steps.find(step => step.id === stepId);
+      step.done = !step.done;
+      project.done = project.steps.every(step => step.done);
+    });
+    projectInfo(state.projects.find(p => p.id === projectId));
+  },
+  'project-log': id => modal('Учесть время',field('Потрачено минут',numberInput('minutes',30,1,1440)),
+    data => commit(next => {
+      const project = next.projects.find(p => p.id === id);
+      project.actualMinutes = (Number(project.actualMinutes) || 0) + int(data,'minutes');
+    },'Время учтено')),
+  'project-done': async id => {
+    await commit(next => { next.projects.find(p => p.id === id).done = true; },'Проект завершён');
+    projectInfo(state.projects.find(p => p.id === id));
+  },
   'reward-done': id => commit(next => { next.rewards.find(p => p.id === id).claimed = true; },'Награда получена'),
   'health-settings': () => modal('Параметры тела',fieldGrid(
     field('Рост, см',input('height',state.body.height,'type="number" min="20" max="275" step="0.1"')),
@@ -783,7 +839,7 @@ const actions = {
     toast('Ключ отозван');
   },'Отозвать','danger'),
 };
-for (const kind of ['habit','project','health','finance','reward']) actions[kind] = () => recordForm(kind);
+for (const kind of ['habit','health','finance','reward']) actions[kind] = () => recordForm(kind);
 
 document.addEventListener('click',async event => {
   const trigger = event.target.closest('[data-action]');

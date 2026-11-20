@@ -54,6 +54,21 @@ async function run() {
   await step(page,'Сохранить');
   await page.getByRole('button',{name:'Подготовить таблицу'}).click();
 
+  await page.getByRole('button',{name:'Проекты',exact:true}).click();
+  await page.getByRole('button',{name:'Новый проект'}).click();
+  await page.getByLabel('Название').fill('Учебный проект');
+  await page.getByLabel('Этапы, по одному на строку').fill('Подготовить черновик');
+  await step(page,'Сохранить');
+  await page.getByRole('button',{name:'Открыть',exact:true}).click();
+  await page.getByRole('button',{name:'Учесть время'}).click();
+  await page.getByLabel('Потрачено минут').fill('45');
+  await step(page,'Сохранить');
+  await page.getByRole('button',{name:'Открыть',exact:true}).click();
+  await page.getByText('Потрачено · 45 мин',{exact:false}).waitFor();
+  await page.getByRole('button',{name:'Подготовить черновик'}).click();
+  await page.getByText('Без даты · Завершён',{exact:false}).waitFor();
+  await page.getByRole('button',{name:'Закрыть',exact:true}).click();
+
   await page.getByRole('link',{name:'Развитие',exact:true}).click();
   await page.getByRole('button',{name:'Результаты'}).click();
   await page.getByRole('button',{name:'Настроить норматив'}).click();
