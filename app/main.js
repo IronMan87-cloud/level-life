@@ -524,12 +524,12 @@ function recordForm(kind) {
   },'Запись добавлена'));
 }
 
-async function backup(includeDevice) {
+async function backup(includeDevice, legacyOnly = false) {
   const snapshot = account ? await cloud.export() : null;
   if (snapshot && (snapshot.owner !== account.id || snapshot.sha256 !== await checksum(snapshot.snapshot_text))) {
     throw new Error('Проверка облачной копии не пройдена.');
   }
-  const device = includeDevice ? await deviceArchive() : null;
+  const device = includeDevice ? await deviceArchive(account?.id, legacyOnly) : null;
   if (device && account && device.owner && device.owner !== account.id) {
     throw new Error('Старые данные устройства связаны с другим аккаунтом.');
   }
@@ -551,10 +551,10 @@ function validateDownload(file, expected) {
 
 async function resetForm(deviceOnly = false) {
   if (syncing || failedDraft || (account && !readSucceeded)) throw new Error('Сначала завершите синхронизацию.');
-  const archive = await backup(deviceOnly || !account);
+  const archive = await backup(deviceOnly || !account, deviceOnly);
   const date = today();
   modal(deviceOnly ? 'Очистить данные старой версии' : 'Сбросить данные LEVEL',
-    `<p>${deviceOnly ? 'Будут удалены резервируемые записи и файлы на этом устройстве.' : account ? 'Все данные развития облачного аккаунта будут удалены. Вход в аккаунт сохранится. Старые данные на устройстве можно очистить отдельно.' : 'Все записи LEVEL в этом браузере, включая старые данные и файлы, будут удалены.'}</p>
+    `<p>${deviceOnly ? 'Будут удалены резервируемые записи и файлы на этом устройстве.' : account ? 'Все данные развития облачного аккаунта будут удалены. Вход в аккаунт сохранится. Старые данные на устройстве можно очистить отдельно.' : 'Будут удалены данные гостевого режима. Данные старой версии войдут в сброс, если они не привязаны к другому аккаунту.'}</p>
      <p>Скачайте копию и выберите тот же файл для проверки.</p>
      ${button('reset-download','Скачать копию','cloud','secondary')}` +
     field('Скачанная резервная копия',input('file','','type="file" accept="application/json,.json" required')) +
@@ -564,7 +564,7 @@ async function resetForm(deviceOnly = false) {
       const verified = await validateDownload(data.get('file'),archive);
       if (syncing || failedDraft) throw new Error('Завершите синхронизацию и скачайте свежую копию.');
       if (!account && JSON.stringify(verified.state) !== JSON.stringify(state)) throw new Error('Данные изменились. Скачайте свежую копию.');
-      if (verified.device) await clearDeviceArchive(verified.device);
+      if (verified.device) await clearDeviceArchive(verified.device, account?.id, deviceOnly);
       if (!deviceOnly) {
         if (account) {
           if (verified.snapshot) {
@@ -770,7 +770,7 @@ const actions = {
     modal('Данные предыдущей версии','<p>Можно скачать снимок и локальные файлы старого LEVEL. Эти данные открываются только вручную.</p>' +
       `<div class="button-row">${button('legacy-export','Скачать данные устройства','cloud','secondary')}${button('legacy-reset','Очистить устройство','','danger')}</div>`);
   },
-  'legacy-export': async () => { download(await backup(true),'level-device-backup.json'); toast('Копия подготовлена'); },
+  'legacy-export': async () => { download(await backup(true,true),'level-device-backup.json'); toast('Копия подготовлена'); },
   'legacy-reset': () => resetForm(true),
   'agent-key': () => modal('Выпустить ключ','<p>Новый ключ заменит прежний. Он даёт право отправлять записи в дневник.</p>',async () => {
     const token = await cloud.rpc('level_agent_key',{revoke_key:false});

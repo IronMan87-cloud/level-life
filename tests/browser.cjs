@@ -1,5 +1,5 @@
 const { chromium, webkit, devices } = require('playwright');
-const { join, dirname, extname } = require('node:path');
+const { join, extname } = require('node:path');
 const { readFile, mkdir } = require('node:fs/promises');
 const assert = require('node:assert/strict');
 
@@ -126,15 +126,43 @@ async function run() {
   await page.screenshot({path:join(capture,version+'-review.png'),fullPage:true});
   await page.locator('.side-nav').getByRole('link',{name:'Профиль'}).click();
   await page.getByRole('button',{name:'Настройки',exact:true}).click();
+  // The ephemeral WPE profile cannot persist Blob fixtures. Chromium exercises binary archives.
+  if (version !== 'webkit') await page.evaluate(() => new Promise((resolve,reject) => {
+    const request = indexedDB.open('level-evidence-v1',1);
+    request.onupgradeneeded = () => request.result.createObjectStore('files',{keyPath:'id'});
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const tx = db.transaction('files','readwrite');
+      tx.objectStore('files').put({ id:'test-evidence', name:'test.txt', blob:new Blob(['archived evidence'],{type:'text/plain'}) });
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = () => reject(tx.error);
+    };
+  }));
   await page.getByRole('button',{name:'Сбросить данные',exact:true}).click();
   const download = page.waitForEvent('download');
   await page.getByRole('dialog').getByRole('button',{name:'Скачать копию'}).click();
   const path = await (await download).path();
+  const archive = JSON.parse(JSON.parse(await readFile(path,'utf8')).content);
+  if (version !== 'webkit') assert.match(archive.device.files[0].content,/^data:text\/plain;base64,/);
+  await page.getByLabel('Скачанная резервная копия').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from('{}')});
+  await page.getByLabel('Введите СБРОСИТЬ').fill('СБРОСИТЬ');
+  await step(page,'Сбросить');
+  await page.getByText('Копия отличается от исходных данных.',{exact:false}).waitFor();
   await page.getByLabel('Скачанная резервная копия').setInputFiles(path);
   await page.getByLabel('Введите СБРОСИТЬ').fill('СБРОСИТЬ');
   await step(page,'Сбросить');
   await page.getByRole('heading',{name:'Что для вас важно?'}).waitFor({timeout:5000}).catch(async error => { console.log(await page.locator('dialog').innerText()); throw error; });
   assert.equal(await saved(),null);
+  assert.equal(await page.evaluate(() => new Promise((resolve,reject) => {
+    const open = indexedDB.open('level-evidence-v1',1);
+    open.onerror = () => reject(open.error);
+    open.onsuccess = () => {
+      const count = open.result.transaction('files').objectStore('files').count();
+      count.onsuccess = () => { open.result.close(); resolve(count.result); };
+      count.onerror = () => reject(count.error);
+    };
+  })),0);
   await page.getByRole('button',{name:'Закрыть',exact:true}).click();
   await page.getByRole('heading',{name:'Обзор дня',level:1}).waitFor();
 
@@ -166,6 +194,7 @@ async function run() {
   });
   await phone.reload();
   await phone.locator('.mobile-nav').getByRole('link',{name:'План'}).click();
+  await phone.getByRole('heading',{name:'План',level:1}).waitFor();
   assert.equal(await phone.locator('.task-row').count(),120);
   assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
   assert.deepEqual(failures,[]);

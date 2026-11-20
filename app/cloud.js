@@ -44,23 +44,38 @@ export async function checksum(text) {
   return [...digest].map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-function getEvidence() {
+function evidenceTransaction(mode, operation) {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('level-evidence-v1', 1);
     request.onupgradeneeded = () => request.result.createObjectStore('files', { keyPath: 'id' });
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const db = request.result;
-      const read = db.transaction('files').objectStore('files').getAll();
-      read.onerror = () => {
+      db.onversionchange = () => db.close();
+      const transaction = db.transaction('files', mode);
+      const store = transaction.objectStore('files');
+      let result;
+      let failure;
+      transaction.oncomplete = () => {
         db.close();
-        reject(read.error);
+        resolve(result);
       };
-      read.onsuccess = () => {
+      transaction.onabort = () => {
         db.close();
-        resolve(read.result);
+        reject(failure || transaction.error || new Error('Хранилище файлов недоступно.'));
       };
+      operation(store, value => { result = value; }, error => {
+        failure = error;
+        transaction.abort();
+      });
     };
+  });
+}
+
+function getEvidence() {
+  return evidenceTransaction('readonly', (store, capture) => {
+    const read = store.getAll();
+    read.onsuccess = () => capture(read.result);
   });
 }
 
@@ -73,12 +88,16 @@ function toDataURL(blob) {
   });
 }
 
-export async function deviceArchive() {
-  const keys = ['level-life-v1', 'level-life-sync-meta-v1', 'level-sound-enabled', 'level-workspace-v2'];
+export async function deviceArchive(owner = null, legacyOnly = false) {
   const metadata = JSON.parse(localStorage.getItem('level-life-sync-meta-v1') || '{}');
-  const evidence = await getEvidence();
+  const sameOwner = !metadata.userId || metadata.userId === owner;
+  if (legacyOnly && !sameOwner) throw new Error('Войдите в аккаунт, с которым связаны старые данные устройства.');
+  const keys = sameOwner ? ['level-life-v1', 'level-life-sync-meta-v1', 'level-sound-enabled'] : [];
+  if (!legacyOnly) keys.push('level-workspace-v2');
+  const evidence = sameOwner ? await getEvidence() : [];
   return {
-    owner: metadata.userId || null,
+    owner: sameOwner ? metadata.userId || null : null,
+    includesEvidence: sameOwner,
     records: Object.fromEntries(keys.flatMap(key => {
       const value = localStorage.getItem(key);
       return value === null ? [] : [[key, value]];
@@ -91,25 +110,24 @@ export async function deviceArchive() {
   };
 }
 
-export async function clearDeviceArchive(archive) {
-  const now = await deviceArchive();
+export async function clearDeviceArchive(archive, owner = null, legacyOnly = false) {
+  const now = await deviceArchive(owner, legacyOnly);
   if (JSON.stringify(now) !== JSON.stringify(archive)) {
     throw new Error('Данные устройства изменились после экспорта. Скачайте свежую копию.');
   }
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.deleteDatabase('level-evidence-v1');
-    let blocked = false;
-    request.onblocked = () => {
-      blocked = true;
-      reject(new Error('Закройте другие вкладки LEVEL и повторите операцию.'));
-    };
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => {
-      if (blocked) return;
-      for (const [key, value] of Object.entries(archive.records)) {
-        if (localStorage.getItem(key) === value) localStorage.removeItem(key);
+  if (archive.includesEvidence) await evidenceTransaction('readwrite', (store, capture, abort) => {
+    const read = store.getAllKeys();
+    read.onsuccess = () => {
+      const keys = archive.files.map(file => file.id).sort();
+      if (JSON.stringify(read.result.sort()) !== JSON.stringify(keys) ||
+          Object.entries(archive.records).some(([key,value]) => localStorage.getItem(key) !== value)) {
+        abort(new Error('Данные устройства изменились после экспорта. Скачайте свежую копию.'));
+      } else {
+        store.clear();
       }
-      resolve();
     };
   });
+  for (const [key,value] of Object.entries(archive.records)) {
+    if (localStorage.getItem(key) === value) localStorage.removeItem(key);
+  }
 }
